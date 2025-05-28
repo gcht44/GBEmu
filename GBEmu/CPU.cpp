@@ -372,6 +372,7 @@ void CPU::executeOpcode(uint8_t opcode, Bus& bus)
 {
 	destMem = false;
     currentInstruction = OpcodeToInstruction(opcode);
+    reg.PC++;
 	fetchData(currentInstruction, bus);
 }
 
@@ -379,6 +380,7 @@ void CPU::fetchData(OpcodeInfo curInstr, Bus& bus)
 {
 	switch (curInstr.AM)
 	{
+	case AM_IMP: break;
 	case AM_R_D16:
         uint16_t lo = bus.read(reg.PC++);
         uint16_t hi = bus.read(reg.PC++);
@@ -400,20 +402,26 @@ void CPU::fetchData(OpcodeInfo curInstr, Bus& bus)
 	case AM_R_MR:
 		fetchDataVal = bus.read(reg.PC++);
 		break;
+
 	case AM_HLI_R:
 		// Handle HLI operation
 		break;
 	case AM_HLD_R:
 		// Handle HLD operation
 		break;
+
 	case AM_R_A8:
-		// Handle A8 addressing mode
+		
 		break;
 	case AM_A8_R:
-		// Handle A8 addressing mode for writing to register
+        destMem = bus.read(reg.PC++);
+        destMem |= 0xFF00;
+        destIsMem = true;
 		break;
 	default:
 		std::cerr << "Unsupported addressing mode: " << static_cast<int>(curInstr.AM) << "\n";
 		exit(1);
 	}
+
+    return;
 }
