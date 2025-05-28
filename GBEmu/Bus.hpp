@@ -6,11 +6,11 @@
 
 class Bus {
 public:
-	Bus() {};
+	Bus(std::vector<uint8_t> mem) : memory(std::move(mem)) {};
 	void write(uint16_t addr, uint8_t val);
 	uint8_t read(uint16_t addr);
 private:
-	uint8_t memory[0xFFFF];
+	std::vector<uint8_t> memory;
 };
 
 

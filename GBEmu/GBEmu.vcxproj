@@ -21,13 +21,18 @@
   <ItemGroup>
     <ClCompile Include="Bus.cpp" />
     <ClCompile Include="CPU.cpp" />
+    <ClCompile Include="Emu.cpp" />
     <ClCompile Include="GBRomReader.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bus.hpp" />
     <ClInclude Include="CPU.hpp" />
+    <ClInclude Include="Emu.hpp" />
     <ClInclude Include="GBRomReader.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Pokemon_Rouge.gb" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

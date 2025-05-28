@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <map>
+#include "Bus.hpp"
 
 class CPU {
 public:
@@ -116,6 +117,7 @@ public:
 	struct Register 
 	{
 		uint8_t A;
+		uint8_t F;
 		uint8_t B;
 		uint8_t C;
 		uint8_t D;
@@ -125,19 +127,30 @@ public:
 
 		uint16_t SP;
 		uint16_t PC;
-
-		bool z;
-		bool n;
-		bool h;
-		bool c;
 	};
 
 
 	CPU();
+	bool isHalted() const { return halted; }
+	bool isRunning() const { return running; }
 
-	uint8_t readRegister8bit();
+	uint8_t readRegister8bit(RegType RT);
+	uint16_t readRegister16bit(RegType RT);
+	void setFlags(char z, char n, char h, char c);
+	void executeOpcode(uint8_t opcode, Bus& bus);
 private:
 	Register reg;
+	OpcodeInfo currentInstruction;
+	uint16_t fetchDataVal;
+	uint16_t destMem;
+	bool destIsMem;
+
+	bool halted;
+	bool running;
+
+
+	OpcodeInfo OpcodeToInstruction(uint8_t opcode) const;
+	void fetchData(OpcodeInfo curInstr, Bus& bus);
 };
 
 #endif

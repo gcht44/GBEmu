@@ -6,6 +6,9 @@ CPU::CPU()
 {
     reg = { 0 };
     reg.PC = 0x100;
+	halted = false;
+	running = true;
+	destIsMem = false;
 
     OpcodeTable = {
             // 0x00 - 0x0F
@@ -295,5 +298,122 @@ CPU::CPU()
             {0xFD, {IN_ERR, AM_IMP, RT_NONE, RT_NONE}}, // Invalid
             {0xFE, {IN_CP, AM_D8, RT_NONE, RT_NONE}},
             {0xFF, {IN_RST, AM_IMP, RT_NONE, RT_NONE}}  // RST 38H
-        };
     };
+}
+
+CPU::OpcodeInfo CPU::OpcodeToInstruction(uint8_t opcode) const
+{
+    auto it = this->OpcodeTable.find(opcode);
+    if (it != this->OpcodeTable.end()) {
+		return it->second; // donne l'instruction correspondante | it->first donne le clé (l'opcode)
+    }
+
+    return { IN_ERR, AM_IMP, RT_NONE, RT_NONE }; // Return an error instruction if not found
+}
+
+uint8_t CPU::readRegister8bit(RegType RT)
+{
+	uint8_t value = 0;
+	switch (RT) {
+	case RT_A: value = reg.A; break;
+	case RT_B: value = reg.B; break;
+	case RT_C: value = reg.C; break;
+	case RT_D: value = reg.D; break;
+	case RT_E: value = reg.E; break;
+	case RT_H: value = reg.H; break;
+	case RT_L: value = reg.L; break;
+	default:
+		std::cerr << "Invalid register read: " << static_cast<int>(RT) << "\n";
+		exit(1);
+	}
+	return value;
+}
+uint16_t CPU::readRegister16bit(RegType RT)
+{
+	uint16_t value = 0;
+	switch (RT) {
+	case RT_AF: value = (reg.A << 8) | reg.F; break;
+	case RT_BC: value = (reg.B << 8) | reg.C; break;
+	case RT_DE: value = (reg.D << 8) | reg.E; break;
+	case RT_HL: value = (reg.H << 8) | reg.L; break;
+	case RT_SP: value = reg.SP; break;
+	case RT_PC: value = reg.PC; break;
+	default:
+		std::cerr << "Invalid register read: " << static_cast<int>(RT) << "\n";
+		exit(1);
+	}
+	return value;
+}
+
+void CPU::setFlags(char z, char n, char h, char c)
+{
+    if (z != -1)
+    {
+		reg.F = (reg.F & 0x7F) | (z << 7); // Set Z flag
+    }
+
+    if (n != -1)
+    {
+		reg.F = (reg.F & 0xBF) | (n << 6); // Set N flag
+    }
+
+    if (h != -1)
+    {
+		reg.F = (reg.F & 0xEF) | (h << 5); // Set H flag
+    }
+
+    if (c != -1)
+    {
+		reg.F = (reg.F & 0xF7) | (c << 4); // Set C flag
+    }
+}
+
+void CPU::executeOpcode(uint8_t opcode, Bus& bus)
+{
+	destMem = false;
+    currentInstruction = OpcodeToInstruction(opcode);
+	fetchData(currentInstruction, bus);
+}
+
+void CPU::fetchData(OpcodeInfo curInstr, Bus& bus)
+{
+	switch (curInstr.AM)
+	{
+	case AM_R_D16:
+        uint16_t lo = bus.read(reg.PC++);
+        uint16_t hi = bus.read(reg.PC++);
+
+		fetchDataVal = (hi << 8) | lo;
+		break;
+	case AM_R_D8:
+		fetchDataVal = bus.read(reg.PC++);
+		break;
+	case AM_MR_R:
+        fetchDataVal = readRegister8bit(currentInstruction.RT2);
+        destMem = readRegister16bit(currentInstruction.RT1);
+        destIsMem = true;
+
+        if (currentInstruction.RT1 == RT_C) {
+            destMem |= 0xFF00;
+        }
+		break;
+	case AM_R_MR:
+		fetchDataVal = bus.read(reg.PC++);
+		break;
+	case AM_HLI_R:
+		// Handle HLI operation
+		break;
+	case AM_HLD_R:
+		// Handle HLD operation
+		break;
+	case AM_R_A8:
+		// Handle A8 addressing mode
+		break;
+	case AM_A8_R:
+		// Handle A8 addressing mode for writing to register
+		break;
+	default:
+		std::cerr << "Unsupported addressing mode: " << static_cast<int>(curInstr.AM) << "\n";
+		exit(1);
+	}
+}
