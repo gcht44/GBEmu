@@ -4,6 +4,7 @@
 #include <iostream>
 #include <map>
 #include "Bus.hpp"
+#include "Stack.hpp"
 
 class CPU {
 public:
@@ -77,9 +78,9 @@ public:
 		IN_XOR, // OK
 		IN_OR, // OK
 		IN_CP, // OK
-		IN_POP,
+		IN_POP, // OK
 		IN_JP, // OK
-		IN_PUSH,
+		IN_PUSH, // OK
 		IN_RET,
 		IN_CB,
 		IN_CALL,
@@ -139,7 +140,7 @@ public:
 	};
 
 
-	CPU();
+	CPU() : stack() {};
 	bool isHalted() const { return halted; }
 	bool isRunning() const { return running; }
 
@@ -149,6 +150,8 @@ public:
 	void setFlags(char z, char n, char h, char c);
 	void executeOpcode(uint8_t opcode, Bus& bus);
 private:
+	Stack stack;
+
 	Register reg;
 	OpcodeInfo currentInstruction;
 	uint16_t fetchDataVal;
@@ -176,8 +179,8 @@ private:
 	void procADC();
 	void procSUB();
 	void procSBC();
-	void procPOP();
-	void procPUSH();
+	void procPOP(Bus& bus);
+	void procPUSH(Bus& bus);
 };
 
 #endif

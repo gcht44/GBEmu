@@ -441,6 +441,39 @@ void CPU::executeOpcode(uint8_t opcode, Bus& bus)
 	case IN_JP:
 		procJP();
 		break;
+	case IN_ADC:
+		procADC();
+		break;
+	case IN_ADD:
+		procADD(bus);
+		break;
+	case IN_SUB:
+		procSUB();
+		break;
+	case IN_SBC:
+		procSBC();
+		break;
+	case IN_AND:
+		procAND();
+		break;
+	case IN_XOR:
+		procXOR();
+		break;
+	case IN_OR:
+		procOR();
+		break;
+	case IN_CP:
+		procCP();
+		break;
+	case IN_INC:
+		procINC(bus);
+		break;
+	case IN_DEC:
+		procDEC(bus);
+		break;
+    default:
+        std::cerr << "Invalid OPCODE read: " << static_cast<int>(currentInstruction.IN) << "\n";
+        exit(1);
     }
 }
 
@@ -871,4 +904,13 @@ void CPU::procSBC()
     bool cFlag = (readRegister(currentInstruction.RT1) - fetchDataVal) < 0;
     bool zFlag = value == 0;
     setFlags(zFlag, 1, hFlag, cFlag);
+}
+
+void CPU::procPOP(Bus& bus)
+{
+	writeRegister(currentInstruction.RT1 ,stack.pop16(reg, bus));
+}
+void CPU::procPUSH(Bus& bus)
+{
+	stack.push16(readRegister(currentInstruction.RT1), reg, bus);
 }
