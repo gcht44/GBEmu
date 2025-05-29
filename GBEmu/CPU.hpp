@@ -54,10 +54,10 @@ public:
 	enum Instruction
 	{
 		IN_NONE,
-		IN_NOP,
-		IN_LD,
-		IN_INC,
-		IN_DEC,
+		IN_NOP, // OK
+		IN_LD, // OK
+		IN_INC, // OK
+		IN_DEC, // OK
 		IN_RLCA,
 		IN_ADD,
 		IN_RRCA,
@@ -78,7 +78,7 @@ public:
 		IN_OR,
 		IN_CP,
 		IN_POP,
-		IN_JP,
+		IN_JP, // OK
 		IN_PUSH,
 		IN_RET,
 		IN_CB,
@@ -167,6 +167,8 @@ private:
 	void procJP();
 	void procINC(Bus& bus);
 	void procDEC(Bus& bus);
+	void procADD(Bus& bus);
+	void procJR();
 };
 
 #endif

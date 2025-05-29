@@ -6,7 +6,8 @@ Status development:
     - JP -> OK (No blaarg test yet)
     - INC -> Test
     - DEC -> Test
-
+    - ADD -> Test
+    - JR -> Test
 */
 
 CPU::CPU()
@@ -494,6 +495,10 @@ void CPU::fetchData(Bus& bus)
 	case AM_R_R:
 		fetchDataVal = readRegister(currentInstruction.RT2);
 		break;
+	case AM_MR:
+		destMem = readRegister(currentInstruction.RT1);
+		destIsMem = true;
+		break;
 	default:
 		std::cerr << "Unsupported addressing mode: " << static_cast<int>(currentInstruction.AM) << "\n";
 		exit(1);
@@ -773,4 +778,27 @@ void CPU::procDEC(Bus& bus)
 
         setFlags(zFlag, 0, hFlag, -1);
     }
+}
+
+void CPU::procADD(Bus& bus)
+{
+	uint16_t value = readRegister(currentInstruction.RT1) + fetchDataVal;
+	writeRegister(currentInstruction.RT1, value & 0xFFFF);
+	bool hFlag = ((readRegister(currentInstruction.RT1) & 0xFF) + (fetchDataVal & 0xFF)) > 0xF;
+	bool cFlag = value > 0xFFFF;
+	setFlags(-1, 0, hFlag, cFlag);
+}
+
+void CPU::procJR()
+{
+    if ((currentInstruction.condition == CT_C) && checkCond(currentInstruction.condition))
+        reg.PC += fetchDataVal;
+    else if ((currentInstruction.condition == CT_NC) && checkCond(currentInstruction.condition))
+        reg.PC += fetchDataVal;
+    else if ((currentInstruction.condition == CT_Z) && checkCond(currentInstruction.condition))
+        reg.PC += fetchDataVal;
+    else if ((currentInstruction.condition == CT_NZ) && checkCond(currentInstruction.condition))
+        reg.PC += fetchDataVal;
+    else
+        reg.PC += fetchDataVal;
 }
