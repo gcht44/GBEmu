@@ -85,7 +85,6 @@ public:
 		IN_CALL,
 		IN_RETI,
 		IN_LDH,
-		IN_JPHL,
 		IN_DI,
 		IN_EI,
 		IN_RST,
@@ -104,12 +103,22 @@ public:
 		IN_SET
 	};
 
+	enum CT
+	{
+		CT_NONE,
+		CT_C,
+		CT_NC,
+		CT_Z,
+		CT_NZ
+	};
+
 	struct OpcodeInfo
 	{
 		Instruction IN;
 		AddrMode AM;
 		RegType RT1;
 		RegType RT2;
+		CT condition;
 	};
 
     std::map<uint8_t, OpcodeInfo> OpcodeTable;
@@ -134,8 +143,9 @@ public:
 	bool isHalted() const { return halted; }
 	bool isRunning() const { return running; }
 
-	uint8_t readRegister8bit(RegType RT);
-	uint16_t readRegister16bit(RegType RT);
+	uint16_t readRegister(RegType RT);
+	void writeRegister(RegType RT, uint16_t val);
+
 	void setFlags(char z, char n, char h, char c);
 	void executeOpcode(uint8_t opcode, Bus& bus);
 private:
@@ -148,9 +158,13 @@ private:
 	bool halted;
 	bool running;
 
-
 	OpcodeInfo OpcodeToInstruction(uint8_t opcode) const;
-	void fetchData(OpcodeInfo curInstr, Bus& bus);
+	void fetchData(Bus& bus);
+	std::string getInstructionName(Instruction instr) const;
+	bool checkCond(CT cond);
+
+	void procLD(Bus& bus);
+	void procJP();
 };
 
 #endif

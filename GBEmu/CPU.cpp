@@ -1,6 +1,11 @@
 #include "CPU.hpp"
 
+/*
+Status development:
+    - LD -> OK (No blaarg test yet)
+    - JP -> OK (No blaarg test yet)
 
+*/
 
 CPU::CPU()
 {
@@ -11,294 +16,295 @@ CPU::CPU()
 	destIsMem = false;
 
     OpcodeTable = {
-            // 0x00 - 0x0F
-            {0x00, {IN_NOP, AM_IMP, RT_NONE, RT_NONE}},
-            {0x01, {IN_LD, AM_R_D16, RT_BC, RT_NONE}},
-            {0x02, {IN_LD, AM_MR_R, RT_BC, RT_A}},
-            {0x03, {IN_INC, AM_R, RT_BC, RT_NONE}},
-            {0x04, {IN_INC, AM_R, RT_B, RT_NONE}},
-            {0x05, {IN_DEC, AM_R, RT_B, RT_NONE}},
-            {0x06, {IN_LD, AM_R_D8, RT_B, RT_NONE}},
-            {0x07, {IN_RLCA, AM_IMP, RT_NONE, RT_NONE}},
-            {0x08, {IN_LD, AM_A16_R, RT_NONE, RT_SP}},
-            {0x09, {IN_ADD, AM_R_R, RT_HL, RT_BC}},
-            {0x0A, {IN_LD, AM_R_MR, RT_A, RT_BC}},
-            {0x0B, {IN_DEC, AM_R, RT_BC, RT_NONE}},
-            {0x0C, {IN_INC, AM_R, RT_C, RT_NONE}},
-            {0x0D, {IN_DEC, AM_R, RT_C, RT_NONE}},
-            {0x0E, {IN_LD, AM_R_D8, RT_C, RT_NONE}},
-            {0x0F, {IN_RRCA, AM_IMP, RT_NONE, RT_NONE}},
+        // 0x00 - 0x0F
+        {0x00, {IN_NOP, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0x01, {IN_LD, AM_R_D16, RT_BC, RT_NONE, CT_NONE}},
+        {0x02, {IN_LD, AM_MR_R, RT_BC, RT_A, CT_NONE}},
+        {0x03, {IN_INC, AM_R, RT_BC, RT_NONE, CT_NONE}},
+        {0x04, {IN_INC, AM_R, RT_B, RT_NONE, CT_NONE}},
+        {0x05, {IN_DEC, AM_R, RT_B, RT_NONE, CT_NONE}},
+        {0x06, {IN_LD, AM_R_D8, RT_B, RT_NONE, CT_NONE}},
+        {0x07, {IN_RLCA, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0x08, {IN_LD, AM_A16_R, RT_NONE, RT_SP, CT_NONE}},
+        {0x09, {IN_ADD, AM_R_R, RT_HL, RT_BC, CT_NONE}},
+        {0x0A, {IN_LD, AM_R_MR, RT_A, RT_BC, CT_NONE}},
+        {0x0B, {IN_DEC, AM_R, RT_BC, RT_NONE, CT_NONE}},
+        {0x0C, {IN_INC, AM_R, RT_C, RT_NONE, CT_NONE}},
+        {0x0D, {IN_DEC, AM_R, RT_C, RT_NONE, CT_NONE}},
+        {0x0E, {IN_LD, AM_R_D8, RT_C, RT_NONE, CT_NONE}},
+        {0x0F, {IN_RRCA, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
 
-            // 0x10 - 0x1F
-            {0x10, {IN_STOP, AM_D8, RT_NONE, RT_NONE}},
-            {0x11, {IN_LD, AM_R_D16, RT_DE, RT_NONE}},
-            {0x12, {IN_LD, AM_MR_R, RT_DE, RT_A}},
-            {0x13, {IN_INC, AM_R, RT_DE, RT_NONE}},
-            {0x14, {IN_INC, AM_R, RT_D, RT_NONE}},
-            {0x15, {IN_DEC, AM_R, RT_D, RT_NONE}},
-            {0x16, {IN_LD, AM_R_D8, RT_D, RT_NONE}},
-            {0x17, {IN_RLA, AM_IMP, RT_NONE, RT_NONE}},
-            {0x18, {IN_JR, AM_D8, RT_NONE, RT_NONE}},
-            {0x19, {IN_ADD, AM_R_R, RT_HL, RT_DE}},
-            {0x1A, {IN_LD, AM_R_MR, RT_A, RT_DE}},
-            {0x1B, {IN_DEC, AM_R, RT_DE, RT_NONE}},
-            {0x1C, {IN_INC, AM_R, RT_E, RT_NONE}},
-            {0x1D, {IN_DEC, AM_R, RT_E, RT_NONE}},
-            {0x1E, {IN_LD, AM_R_D8, RT_E, RT_NONE}},
-            {0x1F, {IN_RRA, AM_IMP, RT_NONE, RT_NONE}},
+        // 0x10 - 0x1F
+        {0x10, {IN_STOP, AM_D8, RT_NONE, RT_NONE, CT_NONE}},
+        {0x11, {IN_LD, AM_R_D16, RT_DE, RT_NONE, CT_NONE}},
+        {0x12, {IN_LD, AM_MR_R, RT_DE, RT_A, CT_NONE}},
+        {0x13, {IN_INC, AM_R, RT_DE, RT_NONE, CT_NONE}},
+        {0x14, {IN_INC, AM_R, RT_D, RT_NONE, CT_NONE}},
+        {0x15, {IN_DEC, AM_R, RT_D, RT_NONE, CT_NONE}},
+        {0x16, {IN_LD, AM_R_D8, RT_D, RT_NONE, CT_NONE}},
+        {0x17, {IN_RLA, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0x18, {IN_JR, AM_D8, RT_NONE, RT_NONE, CT_NONE}},
+        {0x19, {IN_ADD, AM_R_R, RT_HL, RT_DE, CT_NONE}},
+        {0x1A, {IN_LD, AM_R_MR, RT_A, RT_DE, CT_NONE}},
+        {0x1B, {IN_DEC, AM_R, RT_DE, RT_NONE, CT_NONE}},
+        {0x1C, {IN_INC, AM_R, RT_E, RT_NONE, CT_NONE}},
+        {0x1D, {IN_DEC, AM_R, RT_E, RT_NONE, CT_NONE}},
+        {0x1E, {IN_LD, AM_R_D8, RT_E, RT_NONE, CT_NONE}},
+        {0x1F, {IN_RRA, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
 
-            // 0x20 - 0x2F
-            {0x20, {IN_JR, AM_D8, RT_NONE, RT_NONE}}, // JR NZ,r8
-            {0x21, {IN_LD, AM_R_D16, RT_HL, RT_NONE}},
-            {0x22, {IN_LD, AM_HLI_R, RT_NONE, RT_A}},
-            {0x23, {IN_INC, AM_R, RT_HL, RT_NONE}},
-            {0x24, {IN_INC, AM_R, RT_H, RT_NONE}},
-            {0x25, {IN_DEC, AM_R, RT_H, RT_NONE}},
-            {0x26, {IN_LD, AM_R_D8, RT_H, RT_NONE}},
-            {0x27, {IN_DAA, AM_IMP, RT_NONE, RT_NONE}},
-            {0x28, {IN_JR, AM_D8, RT_NONE, RT_NONE}}, // JR Z,r8
-            {0x29, {IN_ADD, AM_R_R, RT_HL, RT_HL}},
-            {0x2A, {IN_LD, AM_R_HLI, RT_A, RT_NONE}},
-            {0x2B, {IN_DEC, AM_R, RT_HL, RT_NONE}},
-            {0x2C, {IN_INC, AM_R, RT_L, RT_NONE}},
-            {0x2D, {IN_DEC, AM_R, RT_L, RT_NONE}},
-            {0x2E, {IN_LD, AM_R_D8, RT_L, RT_NONE}},
-            {0x2F, {IN_CPL, AM_IMP, RT_NONE, RT_NONE}},
+        // 0x20 - 0x2F
+        {0x20, {IN_JR, AM_D8, RT_NONE, RT_NONE, CT_NZ}},
+        {0x21, {IN_LD, AM_R_D16, RT_HL, RT_NONE, CT_NONE}},
+        {0x22, {IN_LD, AM_HLI_R, RT_NONE, RT_A, CT_NONE}},
+        {0x23, {IN_INC, AM_R, RT_HL, RT_NONE, CT_NONE}},
+        {0x24, {IN_INC, AM_R, RT_H, RT_NONE, CT_NONE}},
+        {0x25, {IN_DEC, AM_R, RT_H, RT_NONE, CT_NONE}},
+        {0x26, {IN_LD, AM_R_D8, RT_H, RT_NONE, CT_NONE}},
+        {0x27, {IN_DAA, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0x28, {IN_JR, AM_D8, RT_NONE, RT_NONE, CT_Z}},
+        {0x29, {IN_ADD, AM_R_R, RT_HL, RT_HL, CT_NONE}},
+        {0x2A, {IN_LD, AM_R_HLI, RT_A, RT_NONE, CT_NONE}},
+        {0x2B, {IN_DEC, AM_R, RT_HL, RT_NONE, CT_NONE}},
+        {0x2C, {IN_INC, AM_R, RT_L, RT_NONE, CT_NONE}},
+        {0x2D, {IN_DEC, AM_R, RT_L, RT_NONE, CT_NONE}},
+        {0x2E, {IN_LD, AM_R_D8, RT_L, RT_NONE, CT_NONE}},
+        {0x2F, {IN_CPL, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
 
-            // 0x30 - 0x3F
-            {0x30, {IN_JR, AM_D8, RT_NONE, RT_NONE}}, // JR NC,r8
-            {0x31, {IN_LD, AM_R_D16, RT_SP, RT_NONE}},
-            {0x32, {IN_LD, AM_HLD_R, RT_NONE, RT_A}},
-            {0x33, {IN_INC, AM_R, RT_SP, RT_NONE}},
-            {0x34, {IN_INC, AM_MR, RT_HL, RT_NONE}},
-            {0x35, {IN_DEC, AM_MR, RT_HL, RT_NONE}},
-            {0x36, {IN_LD, AM_MR_D8, RT_HL, RT_NONE}},
-            {0x37, {IN_SCF, AM_IMP, RT_NONE, RT_NONE}},
-            {0x38, {IN_JR, AM_D8, RT_NONE, RT_NONE}}, // JR C,r8
-            {0x39, {IN_ADD, AM_R_R, RT_HL, RT_SP}},
-            {0x3A, {IN_LD, AM_R_HLD, RT_A, RT_NONE}},
-            {0x3B, {IN_DEC, AM_R, RT_SP, RT_NONE}},
-            {0x3C, {IN_INC, AM_R, RT_A, RT_NONE}},
-            {0x3D, {IN_DEC, AM_R, RT_A, RT_NONE}},
-            {0x3E, {IN_LD, AM_R_D8, RT_A, RT_NONE}},
-            {0x3F, {IN_CCF, AM_IMP, RT_NONE, RT_NONE}},
+        // 0x30 - 0x3F
+        {0x30, {IN_JR, AM_D8, RT_NONE, RT_NONE, CT_NC}},
+        {0x31, {IN_LD, AM_R_D16, RT_SP, RT_NONE, CT_NONE}},
+        {0x32, {IN_LD, AM_HLD_R, RT_NONE, RT_A, CT_NONE}},
+        {0x33, {IN_INC, AM_R, RT_SP, RT_NONE, CT_NONE}},
+        {0x34, {IN_INC, AM_MR, RT_HL, RT_NONE, CT_NONE}},
+        {0x35, {IN_DEC, AM_MR, RT_HL, RT_NONE, CT_NONE}},
+        {0x36, {IN_LD, AM_MR_D8, RT_HL, RT_NONE, CT_NONE}},
+        {0x37, {IN_SCF, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0x38, {IN_JR, AM_D8, RT_NONE, RT_NONE, CT_C}},
+        {0x39, {IN_ADD, AM_R_R, RT_HL, RT_SP, CT_NONE}},
+        {0x3A, {IN_LD, AM_R_HLD, RT_A, RT_NONE, CT_NONE}},
+        {0x3B, {IN_DEC, AM_R, RT_SP, RT_NONE, CT_NONE}},
+        {0x3C, {IN_INC, AM_R, RT_A, RT_NONE, CT_NONE}},
+        {0x3D, {IN_DEC, AM_R, RT_A, RT_NONE, CT_NONE}},
+        {0x3E, {IN_LD, AM_R_D8, RT_A, RT_NONE, CT_NONE}},
+        {0x3F, {IN_CCF, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
 
-            // 0x40 - 0x4F (LD r,r)
-            {0x40, {IN_LD, AM_R_R, RT_B, RT_B}},
-            {0x41, {IN_LD, AM_R_R, RT_B, RT_C}},
-            {0x42, {IN_LD, AM_R_R, RT_B, RT_D}},
-            {0x43, {IN_LD, AM_R_R, RT_B, RT_E}},
-            {0x44, {IN_LD, AM_R_R, RT_B, RT_H}},
-            {0x45, {IN_LD, AM_R_R, RT_B, RT_L}},
-            {0x46, {IN_LD, AM_R_MR, RT_B, RT_HL}},
-            {0x47, {IN_LD, AM_R_R, RT_B, RT_A}},
-            {0x48, {IN_LD, AM_R_R, RT_C, RT_B}},
-            {0x49, {IN_LD, AM_R_R, RT_C, RT_C}},
-            {0x4A, {IN_LD, AM_R_R, RT_C, RT_D}},
-            {0x4B, {IN_LD, AM_R_R, RT_C, RT_E}},
-            {0x4C, {IN_LD, AM_R_R, RT_C, RT_H}},
-            {0x4D, {IN_LD, AM_R_R, RT_C, RT_L}},
-            {0x4E, {IN_LD, AM_R_MR, RT_C, RT_HL}},
-            {0x4F, {IN_LD, AM_R_R, RT_C, RT_A}},
+        // 0x40 - 0x4F
+        {0x40, {IN_LD, AM_R_R, RT_B, RT_B, CT_NONE}},
+        {0x41, {IN_LD, AM_R_R, RT_B, RT_C, CT_NONE}},
+        {0x42, {IN_LD, AM_R_R, RT_B, RT_D, CT_NONE}},
+        {0x43, {IN_LD, AM_R_R, RT_B, RT_E, CT_NONE}},
+        {0x44, {IN_LD, AM_R_R, RT_B, RT_H, CT_NONE}},
+        {0x45, {IN_LD, AM_R_R, RT_B, RT_L, CT_NONE}},
+        {0x46, {IN_LD, AM_R_MR, RT_B, RT_HL, CT_NONE}},
+        {0x47, {IN_LD, AM_R_R, RT_B, RT_A, CT_NONE}},
+        {0x48, {IN_LD, AM_R_R, RT_C, RT_B, CT_NONE}},
+        {0x49, {IN_LD, AM_R_R, RT_C, RT_C, CT_NONE}},
+        {0x4A, {IN_LD, AM_R_R, RT_C, RT_D, CT_NONE}},
+        {0x4B, {IN_LD, AM_R_R, RT_C, RT_E, CT_NONE}},
+        {0x4C, {IN_LD, AM_R_R, RT_C, RT_H, CT_NONE}},
+        {0x4D, {IN_LD, AM_R_R, RT_C, RT_L, CT_NONE}},
+        {0x4E, {IN_LD, AM_R_MR, RT_C, RT_HL, CT_NONE}},
+        {0x4F, {IN_LD, AM_R_R, RT_C, RT_A, CT_NONE}},
 
-            // 0x50 - 0x5F
-            {0x50, {IN_LD, AM_R_R, RT_D, RT_B}},
-            {0x51, {IN_LD, AM_R_R, RT_D, RT_C}},
-            {0x52, {IN_LD, AM_R_R, RT_D, RT_D}},
-            {0x53, {IN_LD, AM_R_R, RT_D, RT_E}},
-            {0x54, {IN_LD, AM_R_R, RT_D, RT_H}},
-            {0x55, {IN_LD, AM_R_R, RT_D, RT_L}},
-            {0x56, {IN_LD, AM_R_MR, RT_D, RT_HL}},
-            {0x57, {IN_LD, AM_R_R, RT_D, RT_A}},
-            {0x58, {IN_LD, AM_R_R, RT_E, RT_B}},
-            {0x59, {IN_LD, AM_R_R, RT_E, RT_C}},
-            {0x5A, {IN_LD, AM_R_R, RT_E, RT_D}},
-            {0x5B, {IN_LD, AM_R_R, RT_E, RT_E}},
-            {0x5C, {IN_LD, AM_R_R, RT_E, RT_H}},
-            {0x5D, {IN_LD, AM_R_R, RT_E, RT_L}},
-            {0x5E, {IN_LD, AM_R_MR, RT_E, RT_HL}},
-            {0x5F, {IN_LD, AM_R_R, RT_E, RT_A}},
+        // 0x50 - 0x5F
+        {0x50, {IN_LD, AM_R_R, RT_D, RT_B, CT_NONE}},
+        {0x51, {IN_LD, AM_R_R, RT_D, RT_C, CT_NONE}},
+        {0x52, {IN_LD, AM_R_R, RT_D, RT_D, CT_NONE}},
+        {0x53, {IN_LD, AM_R_R, RT_D, RT_E, CT_NONE}},
+        {0x54, {IN_LD, AM_R_R, RT_D, RT_H, CT_NONE}},
+        {0x55, {IN_LD, AM_R_R, RT_D, RT_L, CT_NONE}},
+        {0x56, {IN_LD, AM_R_MR, RT_D, RT_HL, CT_NONE}},
+        {0x57, {IN_LD, AM_R_R, RT_D, RT_A, CT_NONE}},
+        {0x58, {IN_LD, AM_R_R, RT_E, RT_B, CT_NONE}},
+        {0x59, {IN_LD, AM_R_R, RT_E, RT_C, CT_NONE}},
+        {0x5A, {IN_LD, AM_R_R, RT_E, RT_D, CT_NONE}},
+        {0x5B, {IN_LD, AM_R_R, RT_E, RT_E, CT_NONE}},
+        {0x5C, {IN_LD, AM_R_R, RT_E, RT_H, CT_NONE}},
+        {0x5D, {IN_LD, AM_R_R, RT_E, RT_L, CT_NONE}},
+        {0x5E, {IN_LD, AM_R_MR, RT_E, RT_HL, CT_NONE}},
+        {0x5F, {IN_LD, AM_R_R, RT_E, RT_A, CT_NONE}},
 
-            // 0x60 - 0x6F
-            {0x60, {IN_LD, AM_R_R, RT_H, RT_B}},
-            {0x61, {IN_LD, AM_R_R, RT_H, RT_C}},
-            {0x62, {IN_LD, AM_R_R, RT_H, RT_D}},
-            {0x63, {IN_LD, AM_R_R, RT_H, RT_E}},
-            {0x64, {IN_LD, AM_R_R, RT_H, RT_H}},
-            {0x65, {IN_LD, AM_R_R, RT_H, RT_L}},
-            {0x66, {IN_LD, AM_R_MR, RT_H, RT_HL}},
-            {0x67, {IN_LD, AM_R_R, RT_H, RT_A}},
-            {0x68, {IN_LD, AM_R_R, RT_L, RT_B}},
-            {0x69, {IN_LD, AM_R_R, RT_L, RT_C}},
-            {0x6A, {IN_LD, AM_R_R, RT_L, RT_D}},
-            {0x6B, {IN_LD, AM_R_R, RT_L, RT_E}},
-            {0x6C, {IN_LD, AM_R_R, RT_L, RT_H}},
-            {0x6D, {IN_LD, AM_R_R, RT_L, RT_L}},
-            {0x6E, {IN_LD, AM_R_MR, RT_L, RT_HL}},
-            {0x6F, {IN_LD, AM_R_R, RT_L, RT_A}},
+        // 0x60 - 0x6F
+        {0x60, {IN_LD, AM_R_R, RT_H, RT_B, CT_NONE}},
+        {0x61, {IN_LD, AM_R_R, RT_H, RT_C, CT_NONE}},
+        {0x62, {IN_LD, AM_R_R, RT_H, RT_D, CT_NONE}},
+        {0x63, {IN_LD, AM_R_R, RT_H, RT_E, CT_NONE}},
+        {0x64, {IN_LD, AM_R_R, RT_H, RT_H, CT_NONE}},
+        {0x65, {IN_LD, AM_R_R, RT_H, RT_L, CT_NONE}},
+        {0x66, {IN_LD, AM_R_MR, RT_H, RT_HL, CT_NONE}},
+        {0x67, {IN_LD, AM_R_R, RT_H, RT_A, CT_NONE}},
+        {0x68, {IN_LD, AM_R_R, RT_L, RT_B, CT_NONE}},
+        {0x69, {IN_LD, AM_R_R, RT_L, RT_C, CT_NONE}},
+        {0x6A, {IN_LD, AM_R_R, RT_L, RT_D, CT_NONE}},
+        {0x6B, {IN_LD, AM_R_R, RT_L, RT_E, CT_NONE}},
+        {0x6C, {IN_LD, AM_R_R, RT_L, RT_H, CT_NONE}},
+        {0x6D, {IN_LD, AM_R_R, RT_L, RT_L, CT_NONE}},
+        {0x6E, {IN_LD, AM_R_MR, RT_L, RT_HL, CT_NONE}},
+        {0x6F, {IN_LD, AM_R_R, RT_L, RT_A, CT_NONE}},
 
-            // 0x70 - 0x7F
-            {0x70, {IN_LD, AM_MR_R, RT_HL, RT_B}},
-            {0x71, {IN_LD, AM_MR_R, RT_HL, RT_C}},
-            {0x72, {IN_LD, AM_MR_R, RT_HL, RT_D}},
-            {0x73, {IN_LD, AM_MR_R, RT_HL, RT_E}},
-            {0x74, {IN_LD, AM_MR_R, RT_HL, RT_H}},
-            {0x75, {IN_LD, AM_MR_R, RT_HL, RT_L}},
-            {0x76, {IN_HALT, AM_IMP, RT_NONE, RT_NONE}},
-            {0x77, {IN_LD, AM_MR_R, RT_HL, RT_A}},
-            {0x78, {IN_LD, AM_R_R, RT_A, RT_B}},
-            {0x79, {IN_LD, AM_R_R, RT_A, RT_C}},
-            {0x7A, {IN_LD, AM_R_R, RT_A, RT_D}},
-            {0x7B, {IN_LD, AM_R_R, RT_A, RT_E}},
-            {0x7C, {IN_LD, AM_R_R, RT_A, RT_H}},
-            {0x7D, {IN_LD, AM_R_R, RT_A, RT_L}},
-            {0x7E, {IN_LD, AM_R_MR, RT_A, RT_HL}},
-            {0x7F, {IN_LD, AM_R_R, RT_A, RT_A}},
+        // 0x70 - 0x7F
+        {0x70, {IN_LD, AM_MR_R, RT_HL, RT_B, CT_NONE}},
+        {0x71, {IN_LD, AM_MR_R, RT_HL, RT_C, CT_NONE}},
+        {0x72, {IN_LD, AM_MR_R, RT_HL, RT_D, CT_NONE}},
+        {0x73, {IN_LD, AM_MR_R, RT_HL, RT_E, CT_NONE}},
+        {0x74, {IN_LD, AM_MR_R, RT_HL, RT_H, CT_NONE}},
+        {0x75, {IN_LD, AM_MR_R, RT_HL, RT_L, CT_NONE}},
+        {0x76, {IN_HALT, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0x77, {IN_LD, AM_MR_R, RT_HL, RT_A, CT_NONE}},
+        {0x78, {IN_LD, AM_R_R, RT_A, RT_B, CT_NONE}},
+        {0x79, {IN_LD, AM_R_R, RT_A, RT_C, CT_NONE}},
+        {0x7A, {IN_LD, AM_R_R, RT_A, RT_D, CT_NONE}},
+        {0x7B, {IN_LD, AM_R_R, RT_A, RT_E, CT_NONE}},
+        {0x7C, {IN_LD, AM_R_R, RT_A, RT_H, CT_NONE}},
+        {0x7D, {IN_LD, AM_R_R, RT_A, RT_L, CT_NONE}},
+        {0x7E, {IN_LD, AM_R_MR, RT_A, RT_HL, CT_NONE}},
+        {0x7F, {IN_LD, AM_R_R, RT_A, RT_A, CT_NONE}},
 
-            // 0x80 - 0x8F (ADD/ADC)
-            {0x80, {IN_ADD, AM_R_R, RT_A, RT_B}},
-            {0x81, {IN_ADD, AM_R_R, RT_A, RT_C}},
-            {0x82, {IN_ADD, AM_R_R, RT_A, RT_D}},
-            {0x83, {IN_ADD, AM_R_R, RT_A, RT_E}},
-            {0x84, {IN_ADD, AM_R_R, RT_A, RT_H}},
-            {0x85, {IN_ADD, AM_R_R, RT_A, RT_L}},
-            {0x86, {IN_ADD, AM_R_MR, RT_A, RT_HL}},
-            {0x87, {IN_ADD, AM_R_R, RT_A, RT_A}},
-            {0x88, {IN_ADC, AM_R_R, RT_A, RT_B}},
-            {0x89, {IN_ADC, AM_R_R, RT_A, RT_C}},
-            {0x8A, {IN_ADC, AM_R_R, RT_A, RT_D}},
-            {0x8B, {IN_ADC, AM_R_R, RT_A, RT_E}},
-            {0x8C, {IN_ADC, AM_R_R, RT_A, RT_H}},
-            {0x8D, {IN_ADC, AM_R_R, RT_A, RT_L}},
-            {0x8E, {IN_ADC, AM_R_MR, RT_A, RT_HL}},
-            {0x8F, {IN_ADC, AM_R_R, RT_A, RT_A}},
+        // 0x80 - 0x8F
+        {0x80, {IN_ADD, AM_R_R, RT_A, RT_B, CT_NONE}},
+        {0x81, {IN_ADD, AM_R_R, RT_A, RT_C, CT_NONE}},
+        {0x82, {IN_ADD, AM_R_R, RT_A, RT_D, CT_NONE}},
+        {0x83, {IN_ADD, AM_R_R, RT_A, RT_E, CT_NONE}},
+        {0x84, {IN_ADD, AM_R_R, RT_A, RT_H, CT_NONE}},
+        {0x85, {IN_ADD, AM_R_R, RT_A, RT_L, CT_NONE}},
+        {0x86, {IN_ADD, AM_R_MR, RT_A, RT_HL, CT_NONE}},
+        {0x87, {IN_ADD, AM_R_R, RT_A, RT_A, CT_NONE}},
+        {0x88, {IN_ADC, AM_R_R, RT_A, RT_B, CT_NONE}},
+        {0x89, {IN_ADC, AM_R_R, RT_A, RT_C, CT_NONE}},
+        {0x8A, {IN_ADC, AM_R_R, RT_A, RT_D, CT_NONE}},
+        {0x8B, {IN_ADC, AM_R_R, RT_A, RT_E, CT_NONE}},
+        {0x8C, {IN_ADC, AM_R_R, RT_A, RT_H, CT_NONE}},
+        {0x8D, {IN_ADC, AM_R_R, RT_A, RT_L, CT_NONE}},
+        {0x8E, {IN_ADC, AM_R_MR, RT_A, RT_HL, CT_NONE}},
+        {0x8F, {IN_ADC, AM_R_R, RT_A, RT_A, CT_NONE}},
 
-            // 0x90 - 0x9F (SUB/SBC)
-            {0x90, {IN_SUB, AM_R, RT_B, RT_NONE}},
-            {0x91, {IN_SUB, AM_R, RT_C, RT_NONE}},
-            {0x92, {IN_SUB, AM_R, RT_D, RT_NONE}},
-            {0x93, {IN_SUB, AM_R, RT_E, RT_NONE}},
-            {0x94, {IN_SUB, AM_R, RT_H, RT_NONE}},
-            {0x95, {IN_SUB, AM_R, RT_L, RT_NONE}},
-            {0x96, {IN_SUB, AM_MR, RT_HL, RT_NONE}},
-            {0x97, {IN_SUB, AM_R, RT_A, RT_NONE}},
-            {0x98, {IN_SBC, AM_R_R, RT_A, RT_B}},
-            {0x99, {IN_SBC, AM_R_R, RT_A, RT_C}},
-            {0x9A, {IN_SBC, AM_R_R, RT_A, RT_D}},
-            {0x9B, {IN_SBC, AM_R_R, RT_A, RT_E}},
-            {0x9C, {IN_SBC, AM_R_R, RT_A, RT_H}},
-            {0x9D, {IN_SBC, AM_R_R, RT_A, RT_L}},
-            {0x9E, {IN_SBC, AM_R_MR, RT_A, RT_HL}},
-            {0x9F, {IN_SBC, AM_R_R, RT_A, RT_A}},
+        // 0x90 - 0x9F
+        {0x90, {IN_SUB, AM_R, RT_B, RT_NONE, CT_NONE}},
+        {0x91, {IN_SUB, AM_R, RT_C, RT_NONE, CT_NONE}},
+        {0x92, {IN_SUB, AM_R, RT_D, RT_NONE, CT_NONE}},
+        {0x93, {IN_SUB, AM_R, RT_E, RT_NONE, CT_NONE}},
+        {0x94, {IN_SUB, AM_R, RT_H, RT_NONE, CT_NONE}},
+        {0x95, {IN_SUB, AM_R, RT_L, RT_NONE, CT_NONE}},
+        {0x96, {IN_SUB, AM_MR, RT_HL, RT_NONE, CT_NONE}},
+        {0x97, {IN_SUB, AM_R, RT_A, RT_NONE, CT_NONE}},
+        {0x98, {IN_SBC, AM_R_R, RT_A, RT_B, CT_NONE}},
+        {0x99, {IN_SBC, AM_R_R, RT_A, RT_C, CT_NONE}},
+        {0x9A, {IN_SBC, AM_R_R, RT_A, RT_D, CT_NONE}},
+        {0x9B, {IN_SBC, AM_R_R, RT_A, RT_E, CT_NONE}},
+        {0x9C, {IN_SBC, AM_R_R, RT_A, RT_H, CT_NONE}},
+        {0x9D, {IN_SBC, AM_R_R, RT_A, RT_L, CT_NONE}},
+        {0x9E, {IN_SBC, AM_R_MR, RT_A, RT_HL, CT_NONE}},
+        {0x9F, {IN_SBC, AM_R_R, RT_A, RT_A, CT_NONE}},
 
-            // 0xA0 - 0xAF (AND/XOR)
-            {0xA0, {IN_AND, AM_R, RT_B, RT_NONE}},
-            {0xA1, {IN_AND, AM_R, RT_C, RT_NONE}},
-            {0xA2, {IN_AND, AM_R, RT_D, RT_NONE}},
-            {0xA3, {IN_AND, AM_R, RT_E, RT_NONE}},
-            {0xA4, {IN_AND, AM_R, RT_H, RT_NONE}},
-            {0xA5, {IN_AND, AM_R, RT_L, RT_NONE}},
-            {0xA6, {IN_AND, AM_MR, RT_HL, RT_NONE}},
-            {0xA7, {IN_AND, AM_R, RT_A, RT_NONE}},
-            {0xA8, {IN_XOR, AM_R, RT_B, RT_NONE}},
-            {0xA9, {IN_XOR, AM_R, RT_C, RT_NONE}},
-            {0xAA, {IN_XOR, AM_R, RT_D, RT_NONE}},
-            {0xAB, {IN_XOR, AM_R, RT_E, RT_NONE}},
-            {0xAC, {IN_XOR, AM_R, RT_H, RT_NONE}},
-            {0xAD, {IN_XOR, AM_R, RT_L, RT_NONE}},
-            {0xAE, {IN_XOR, AM_MR, RT_HL, RT_NONE}},
-            {0xAF, {IN_XOR, AM_R, RT_A, RT_NONE}},
+        // 0xA0 - 0xAF
+        {0xA0, {IN_AND, AM_R, RT_B, RT_NONE, CT_NONE}},
+        {0xA1, {IN_AND, AM_R, RT_C, RT_NONE, CT_NONE}},
+        {0xA2, {IN_AND, AM_R, RT_D, RT_NONE, CT_NONE}},
+        {0xA3, {IN_AND, AM_R, RT_E, RT_NONE, CT_NONE}},
+        {0xA4, {IN_AND, AM_R, RT_H, RT_NONE, CT_NONE}},
+        {0xA5, {IN_AND, AM_R, RT_L, RT_NONE, CT_NONE}},
+        {0xA6, {IN_AND, AM_MR, RT_HL, RT_NONE, CT_NONE}},
+        {0xA7, {IN_AND, AM_R, RT_A, RT_NONE, CT_NONE}},
+        {0xA8, {IN_XOR, AM_R, RT_B, RT_NONE, CT_NONE}},
+        {0xA9, {IN_XOR, AM_R, RT_C, RT_NONE, CT_NONE}},
+        {0xAA, {IN_XOR, AM_R, RT_D, RT_NONE, CT_NONE}},
+        {0xAB, {IN_XOR, AM_R, RT_E, RT_NONE, CT_NONE}},
+        {0xAC, {IN_XOR, AM_R, RT_H, RT_NONE, CT_NONE}},
+        {0xAD, {IN_XOR, AM_R, RT_L, RT_NONE, CT_NONE}},
+        {0xAE, {IN_XOR, AM_MR, RT_HL, RT_NONE, CT_NONE}},
+        {0xAF, {IN_XOR, AM_R, RT_A, RT_NONE, CT_NONE}},
 
-            // 0xB0 - 0xBF (OR/CP)
-            {0xB0, {IN_OR, AM_R, RT_B, RT_NONE}},
-            {0xB1, {IN_OR, AM_R, RT_C, RT_NONE}},
-            {0xB2, {IN_OR, AM_R, RT_D, RT_NONE}},
-            {0xB3, {IN_OR, AM_R, RT_E, RT_NONE}},
-            {0xB4, {IN_OR, AM_R, RT_H, RT_NONE}},
-            {0xB5, {IN_OR, AM_R, RT_L, RT_NONE}},
-            {0xB6, {IN_OR, AM_MR, RT_HL, RT_NONE}},
-            {0xB7, {IN_OR, AM_R, RT_A, RT_NONE}},
-            {0xB8, {IN_CP, AM_R, RT_B, RT_NONE}},
-            {0xB9, {IN_CP, AM_R, RT_C, RT_NONE}},
-            {0xBA, {IN_CP, AM_R, RT_D, RT_NONE}},
-            {0xBB, {IN_CP, AM_R, RT_E, RT_NONE}},
-            {0xBC, {IN_CP, AM_R, RT_H, RT_NONE}},
-            {0xBD, {IN_CP, AM_R, RT_L, RT_NONE}},
-            {0xBE, {IN_CP, AM_MR, RT_HL, RT_NONE}},
-            {0xBF, {IN_CP, AM_R, RT_A, RT_NONE}},
+        // 0xB0 - 0xBF
+        {0xB0, {IN_OR, AM_R, RT_B, RT_NONE, CT_NONE}},
+        {0xB1, {IN_OR, AM_R, RT_C, RT_NONE, CT_NONE}},
+        {0xB2, {IN_OR, AM_R, RT_D, RT_NONE, CT_NONE}},
+        {0xB3, {IN_OR, AM_R, RT_E, RT_NONE, CT_NONE}},
+        {0xB4, {IN_OR, AM_R, RT_H, RT_NONE, CT_NONE}},
+        {0xB5, {IN_OR, AM_R, RT_L, RT_NONE, CT_NONE}},
+        {0xB6, {IN_OR, AM_MR, RT_HL, RT_NONE, CT_NONE}},
+        {0xB7, {IN_OR, AM_R, RT_A, RT_NONE, CT_NONE}},
+        {0xB8, {IN_CP, AM_R, RT_B, RT_NONE, CT_NONE}},
+        {0xB9, {IN_CP, AM_R, RT_C, RT_NONE, CT_NONE}},
+        {0xBA, {IN_CP, AM_R, RT_D, RT_NONE, CT_NONE}},
+        {0xBB, {IN_CP, AM_R, RT_E, RT_NONE, CT_NONE}},
+        {0xBC, {IN_CP, AM_R, RT_H, RT_NONE, CT_NONE}},
+        {0xBD, {IN_CP, AM_R, RT_L, RT_NONE, CT_NONE}},
+        {0xBE, {IN_CP, AM_MR, RT_HL, RT_NONE, CT_NONE}},
+        {0xBF, {IN_CP, AM_R, RT_A, RT_NONE, CT_NONE}},
 
-            // 0xC0 - 0xCF
-            {0xC0, {IN_RET, AM_IMP, RT_NONE, RT_NONE}}, // RET NZ
-            {0xC1, {IN_POP, AM_R, RT_BC, RT_NONE}},
-            {0xC2, {IN_JP, AM_D16, RT_NONE, RT_NONE}}, // JP NZ,a16
-            {0xC3, {IN_JP, AM_D16, RT_NONE, RT_NONE}},
-            {0xC4, {IN_CALL, AM_D16, RT_NONE, RT_NONE}}, // CALL NZ,a16
-            {0xC5, {IN_PUSH, AM_R, RT_BC, RT_NONE}},
-            {0xC6, {IN_ADD, AM_R_D8, RT_A, RT_NONE}},
-            {0xC7, {IN_RST, AM_IMP, RT_NONE, RT_NONE}}, // RST 00H
-            {0xC8, {IN_RET, AM_IMP, RT_NONE, RT_NONE}}, // RET Z
-            {0xC9, {IN_RET, AM_IMP, RT_NONE, RT_NONE}},
-            {0xCA, {IN_JP, AM_D16, RT_NONE, RT_NONE}}, // JP Z,a16
-            {0xCB, {IN_CB, AM_D8, RT_NONE, RT_NONE}},
-            {0xCC, {IN_CALL, AM_D16, RT_NONE, RT_NONE}}, // CALL Z,a16
-            {0xCD, {IN_CALL, AM_D16, RT_NONE, RT_NONE}},
-            {0xCE, {IN_ADC, AM_R_D8, RT_A, RT_NONE}},
-            {0xCF, {IN_RST, AM_IMP, RT_NONE, RT_NONE}}, // RST 08H
+        // 0xC0 - 0xCF
+        {0xC0, {IN_RET, AM_IMP, RT_NONE, RT_NONE, CT_NZ}},
+        {0xC1, {IN_POP, AM_R, RT_BC, RT_NONE, CT_NONE}},
+        {0xC2, {IN_JP, AM_D16, RT_NONE, RT_NONE, CT_NZ}},
+        {0xC3, {IN_JP, AM_D16, RT_NONE, RT_NONE, CT_NONE}},
+        {0xC4, {IN_CALL, AM_D16, RT_NONE, RT_NONE, CT_NZ}},
+        {0xC5, {IN_PUSH, AM_R, RT_BC, RT_NONE, CT_NONE}},
+        {0xC6, {IN_ADD, AM_R_D8, RT_A, RT_NONE, CT_NONE}},
+        {0xC7, {IN_RST, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xC8, {IN_RET, AM_IMP, RT_NONE, RT_NONE, CT_Z}},
+        {0xC9, {IN_RET, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xCA, {IN_JP, AM_D16, RT_NONE, RT_NONE, CT_Z}},
+        {0xCB, {IN_CB, AM_D8, RT_NONE, RT_NONE, CT_NONE}},
+        {0xCC, {IN_CALL, AM_D16, RT_NONE, RT_NONE, CT_Z}},
+        {0xCD, {IN_CALL, AM_D16, RT_NONE, RT_NONE, CT_NONE}},
+        {0xCE, {IN_ADC, AM_R_D8, RT_A, RT_NONE, CT_NONE}},
+        {0xCF, {IN_RST, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
 
-            // 0xD0 - 0xDF
-            {0xD0, {IN_RET, AM_IMP, RT_NONE, RT_NONE}}, // RET NC
-            {0xD1, {IN_POP, AM_R, RT_DE, RT_NONE}},
-            {0xD2, {IN_JP, AM_D16, RT_NONE, RT_NONE}}, // JP NC,a16
-            {0xD3, {IN_ERR, AM_IMP, RT_NONE, RT_NONE}}, // Invalid
-            {0xD4, {IN_CALL, AM_D16, RT_NONE, RT_NONE}}, // CALL NC,a16
-            {0xD5, {IN_PUSH, AM_R, RT_DE, RT_NONE}},
-            {0xD6, {IN_SUB, AM_D8, RT_NONE, RT_NONE}},
-            {0xD7, {IN_RST, AM_IMP, RT_NONE, RT_NONE}}, // RST 10H
-            {0xD8, {IN_RET, AM_IMP, RT_NONE, RT_NONE}}, // RET C
-            {0xD9, {IN_RETI, AM_IMP, RT_NONE, RT_NONE}},
-            {0xDA, {IN_JP, AM_D16, RT_NONE, RT_NONE}}, // JP C,a16
-            {0xDB, {IN_ERR, AM_IMP, RT_NONE, RT_NONE}}, // Invalid
-            {0xDC, {IN_CALL, AM_D16, RT_NONE, RT_NONE}}, // CALL C,a16
-            {0xDD, {IN_ERR, AM_IMP, RT_NONE, RT_NONE}}, // Invalid
-            {0xDE, {IN_SBC, AM_R_D8, RT_A, RT_NONE}},
-            {0xDF, {IN_RST, AM_IMP, RT_NONE, RT_NONE}}, // RST 18H
+        // 0xD0 - 0xDF
+        {0xD0, {IN_RET, AM_IMP, RT_NONE, RT_NONE, CT_NC}},
+        {0xD1, {IN_POP, AM_R, RT_DE, RT_NONE, CT_NONE}},
+        {0xD2, {IN_JP, AM_D16, RT_NONE, RT_NONE, CT_NC}},
+        {0xD3, {IN_ERR, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xD4, {IN_CALL, AM_D16, RT_NONE, RT_NONE, CT_NC}},
+        {0xD5, {IN_PUSH, AM_R, RT_DE, RT_NONE, CT_NONE}},
+        {0xD6, {IN_SUB, AM_D8, RT_NONE, RT_NONE, CT_NONE}},
+        {0xD7, {IN_RST, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xD8, {IN_RET, AM_IMP, RT_NONE, RT_NONE, CT_C}},
+        {0xD9, {IN_RETI, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xDA, {IN_JP, AM_D16, RT_NONE, RT_NONE, CT_C}},
+        {0xDB, {IN_ERR, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xDC, {IN_CALL, AM_D16, RT_NONE, RT_NONE, CT_C}},
+        {0xDD, {IN_ERR, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xDE, {IN_SBC, AM_R_D8, RT_A, RT_NONE, CT_NONE}},
+        {0xDF, {IN_RST, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
 
-            // 0xE0 - 0xEF
-            {0xE0, {IN_LDH, AM_A8_R, RT_NONE, RT_A}},
-            {0xE1, {IN_POP, AM_R, RT_HL, RT_NONE}},
-            {0xE2, {IN_LD, AM_MR_R, RT_C, RT_A}}, // LD (C),A
-            {0xE3, {IN_ERR, AM_IMP, RT_NONE, RT_NONE}}, // Invalid
-            {0xE4, {IN_ERR, AM_IMP, RT_NONE, RT_NONE}}, // Invalid
-            {0xE5, {IN_PUSH, AM_R, RT_HL, RT_NONE}},
-            {0xE6, {IN_AND, AM_D8, RT_NONE, RT_NONE}},
-            {0xE7, {IN_RST, AM_IMP, RT_NONE, RT_NONE}}, // RST 20H
-            {0xE8, {IN_ADD, AM_HL_SPR, RT_SP, RT_NONE}},
-            {0xE9, {IN_JPHL, AM_IMP, RT_NONE, RT_NONE}},
-            {0xEA, {IN_LD, AM_A16_R, RT_NONE, RT_A}},
-            {0xEB, {IN_ERR, AM_IMP, RT_NONE, RT_NONE}}, // Invalid
-            {0xEC, {IN_ERR, AM_IMP, RT_NONE, RT_NONE}}, // Invalid
-            {0xED, {IN_ERR, AM_IMP, RT_NONE, RT_NONE}}, // Invalid
-            {0xEE, {IN_XOR, AM_D8, RT_NONE, RT_NONE}},
-            {0xEF, {IN_RST, AM_IMP, RT_NONE, RT_NONE}}, // RST 28H
+        // 0xE0 - 0xEF
+        {0xE0, {IN_LDH, AM_A8_R, RT_NONE, RT_A, CT_NONE}},
+        {0xE1, {IN_POP, AM_R, RT_HL, RT_NONE, CT_NONE}},
+        {0xE2, {IN_LD, AM_MR_R, RT_C, RT_A, CT_NONE}},
+        {0xE3, {IN_ERR, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xE4, {IN_ERR, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xE5, {IN_PUSH, AM_R, RT_HL, RT_NONE, CT_NONE}},
+        {0xE6, {IN_AND, AM_D8, RT_NONE, RT_NONE, CT_NONE}},
+        {0xE7, {IN_RST, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xE8, {IN_ADD, AM_HL_SPR, RT_SP, RT_NONE, CT_NONE}},
+        {0xE9, {IN_JP, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xEA, {IN_LD, AM_A16_R, RT_NONE, RT_A, CT_NONE}},
+        {0xEB, {IN_ERR, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xEC, {IN_ERR, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xED, {IN_ERR, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xEE, {IN_XOR, AM_D8, RT_NONE, RT_NONE, CT_NONE}},
+        {0xEF, {IN_RST, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
 
-            // 0xF0 - 0xFF
-            {0xF0, {IN_LDH, AM_R_A8, RT_A, RT_NONE}},
-            {0xF1, {IN_POP, AM_R, RT_AF, RT_NONE}},
-            {0xF2, {IN_LD, AM_R_MR, RT_A, RT_C}}, // LD A,(C)
-            {0xF3, {IN_DI, AM_IMP, RT_NONE, RT_NONE}},
-            {0xF4, {IN_ERR, AM_IMP, RT_NONE, RT_NONE}}, // Invalid
-            {0xF5, {IN_PUSH, AM_R, RT_AF, RT_NONE}},
-            {0xF6, {IN_OR, AM_D8, RT_NONE, RT_NONE}},
-            {0xF7, {IN_RST, AM_IMP, RT_NONE, RT_NONE}}, // RST 30H
-            {0xF8, {IN_LD, AM_HL_SPR, RT_HL, RT_SP}},
-            {0xF9, {IN_LD, AM_R_R, RT_SP, RT_HL}},
-            {0xFA, {IN_LD, AM_R_A16, RT_A, RT_NONE}},
-            {0xFB, {IN_EI, AM_IMP, RT_NONE, RT_NONE}},
-            {0xFC, {IN_ERR, AM_IMP, RT_NONE, RT_NONE}}, // Invalid
-            {0xFD, {IN_ERR, AM_IMP, RT_NONE, RT_NONE}}, // Invalid
-            {0xFE, {IN_CP, AM_D8, RT_NONE, RT_NONE}},
-            {0xFF, {IN_RST, AM_IMP, RT_NONE, RT_NONE}}  // RST 38H
+        // 0xF0 - 0xFF
+        {0xF0, {IN_LDH, AM_R_A8, RT_A, RT_NONE, CT_NONE}},
+        {0xF1, {IN_POP, AM_R, RT_AF, RT_NONE, CT_NONE}},
+        {0xF2, {IN_LD, AM_R_MR, RT_A, RT_C, CT_NONE}},
+        {0xF3, {IN_DI, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xF4, {IN_ERR, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xF5, {IN_PUSH, AM_R, RT_AF, RT_NONE, CT_NONE}},
+        {0xF6, {IN_OR, AM_D8, RT_NONE, RT_NONE, CT_NONE}},
+        {0xF7, {IN_RST, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xF8, {IN_LD, AM_HL_SPR, RT_HL, RT_SP, CT_NONE}},
+        {0xF9, {IN_LD, AM_R_R, RT_SP, RT_HL, CT_NONE}},
+        {0xFA, {IN_LD, AM_R_A16, RT_A, RT_NONE, CT_NONE}},
+        {0xFB, {IN_EI, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xFC, {IN_ERR, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xFD, {IN_ERR, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xFE, {IN_CP, AM_D8, RT_NONE, RT_NONE, CT_NONE}},
+        {0xFF, {IN_RST, AM_IMP, RT_NONE, RT_NONE, CT_NONE}}
     };
+
 }
 
 CPU::OpcodeInfo CPU::OpcodeToInstruction(uint8_t opcode) const
@@ -311,39 +317,70 @@ CPU::OpcodeInfo CPU::OpcodeToInstruction(uint8_t opcode) const
     return { IN_ERR, AM_IMP, RT_NONE, RT_NONE }; // Return an error instruction if not found
 }
 
-uint8_t CPU::readRegister8bit(RegType RT)
+uint16_t CPU::readRegister(RegType RT)
 {
-	uint8_t value = 0;
+	uint16_t value = 0;
 	switch (RT) {
 	case RT_A: value = reg.A; break;
+    case RT_F: value = reg.F; break;
 	case RT_B: value = reg.B; break;
 	case RT_C: value = reg.C; break;
 	case RT_D: value = reg.D; break;
 	case RT_E: value = reg.E; break;
 	case RT_H: value = reg.H; break;
 	case RT_L: value = reg.L; break;
+
+    case RT_AF: value = (reg.A << 8) | reg.F; break;
+    case RT_BC: value = (reg.B << 8) | reg.C; break;
+    case RT_DE: value = (reg.D << 8) | reg.E; break;
+    case RT_HL: value = (reg.H << 8) | reg.L; break;
+    case RT_SP: value = reg.SP; break;
+    case RT_PC: value = reg.PC; break;
 	default:
 		std::cerr << "Invalid register read: " << static_cast<int>(RT) << "\n";
 		exit(1);
 	}
 	return value;
 }
-uint16_t CPU::readRegister16bit(RegType RT)
+
+void CPU::writeRegister(RegType RT, uint16_t val)
 {
-	uint16_t value = 0;
-	switch (RT) {
-	case RT_AF: value = (reg.A << 8) | reg.F; break;
-	case RT_BC: value = (reg.B << 8) | reg.C; break;
-	case RT_DE: value = (reg.D << 8) | reg.E; break;
-	case RT_HL: value = (reg.H << 8) | reg.L; break;
-	case RT_SP: value = reg.SP; break;
-	case RT_PC: value = reg.PC; break;
-	default:
-		std::cerr << "Invalid register read: " << static_cast<int>(RT) << "\n";
-		exit(1);
-	}
-	return value;
+    switch (RT)
+    {
+    case RT_A: reg.A = val; break;
+    case RT_F: reg.F = val; break;
+    case RT_B: reg.B = val; break;
+    case RT_C: reg.C = val; break;
+    case RT_D: reg.D = val; break;
+    case RT_E: reg.E = val; break;
+    case RT_H: reg.H = val; break;
+    case RT_L: reg.L = val; break;
+
+    case RT_AF:
+        reg.A = val >> 4;
+        reg.F = val & 0xFF;
+        break;
+    case RT_BC:
+        reg.B = val >> 4;
+        reg.C = val & 0xFF;
+        break;
+    case RT_DE:
+        reg.D = val >> 4;
+        reg.E = val & 0xFF;
+        break;
+    case RT_HL:
+        reg.H = val >> 4;
+        reg.L = val & 0xFF;
+        break;
+    case RT_SP: reg.SP = val; break;
+    case RT_PC: reg.PC = val; break;
+    default:
+        std::cerr << "Invalid register read: " << static_cast<int>(RT) << "\n";
+        exit(1);
+    }
+    return;
 }
+
 
 void CPU::setFlags(char z, char n, char h, char c)
 {
@@ -370,20 +407,48 @@ void CPU::setFlags(char z, char n, char h, char c)
 
 void CPU::executeOpcode(uint8_t opcode, Bus& bus)
 {
-	destMem = false;
+    uint16_t pc = reg.PC;
+	destIsMem = false;
     currentInstruction = OpcodeToInstruction(opcode);
     reg.PC++;
-	fetchData(currentInstruction, bus);
+	fetchData(bus);
+
+    std::cout << "0x" << std::hex << static_cast<int>(pc) << ": " << getInstructionName(currentInstruction.IN)
+        << " A: " << std::hex << static_cast<int>(reg.A)
+        << " F: " << std::hex << static_cast<int>(reg.F)
+        << " B: " << std::hex << static_cast<int>(reg.B)
+        << " C: " << std::hex << static_cast<int>(reg.C)
+        << " D: " << std::hex << static_cast<int>(reg.D)
+        << " E: " << std::hex << static_cast<int>(reg.E)
+        << " H: " << std::hex << static_cast<int>(reg.H)
+        << " L: " << std::hex << static_cast<int>(reg.L)
+        << " SP: " << std::hex << static_cast<int>(reg.SP)
+        << "\n";
+
+    switch (currentInstruction.IN)
+    {
+	case IN_NOP:
+		// No operation
+		break;
+	case IN_LD:
+		procLD(bus);
+		break;
+	case IN_JP:
+		procJP();
+		break;
+    }
 }
 
-void CPU::fetchData(OpcodeInfo curInstr, Bus& bus)
+void CPU::fetchData(Bus& bus)
 {
-	switch (curInstr.AM)
+    uint16_t lo;
+    uint16_t hi;
+	switch (currentInstruction.AM)
 	{
 	case AM_IMP: break;
 	case AM_R_D16:
-        uint16_t lo = bus.read(reg.PC++);
-        uint16_t hi = bus.read(reg.PC++);
+        lo = bus.read(reg.PC++);
+        hi = bus.read(reg.PC++);
 
 		fetchDataVal = (hi << 8) | lo;
 		break;
@@ -391,8 +456,8 @@ void CPU::fetchData(OpcodeInfo curInstr, Bus& bus)
 		fetchDataVal = bus.read(reg.PC++);
 		break;
 	case AM_MR_R:
-        fetchDataVal = readRegister8bit(currentInstruction.RT2);
-        destMem = readRegister16bit(currentInstruction.RT1);
+        fetchDataVal = readRegister(currentInstruction.RT2);
+        destMem = readRegister(currentInstruction.RT1);
         destIsMem = true;
 
         if (currentInstruction.RT1 == RT_C) {
@@ -418,10 +483,230 @@ void CPU::fetchData(OpcodeInfo curInstr, Bus& bus)
         destMem |= 0xFF00;
         destIsMem = true;
 		break;
+	case AM_R:
+        fetchDataVal = readRegister(currentInstruction.RT1);
+        break;
+    case AM_D16:
+        fetchDataVal = bus.read16(reg.PC++);
+        break;
+	case AM_R_R:
+		fetchDataVal = readRegister(currentInstruction.RT2);
+		break;
 	default:
-		std::cerr << "Unsupported addressing mode: " << static_cast<int>(curInstr.AM) << "\n";
+		std::cerr << "Unsupported addressing mode: " << static_cast<int>(currentInstruction.AM) << "\n";
 		exit(1);
 	}
 
     return;
+}
+
+std::string CPU::getInstructionName(Instruction instr) const
+{
+    switch (instr)
+    {   
+    case CPU::IN_NONE:
+        return "IN_NONE";
+        break;
+    case CPU::IN_NOP:
+        return "IN_NOP";
+        break;
+    case CPU::IN_LD:
+		return "IN_LD";
+        break;
+    case CPU::IN_INC:
+		return "IN_INC";
+        break;
+    case CPU::IN_DEC:
+		return "IN_DEC";
+        break;
+    case CPU::IN_RLCA:
+		return "IN_RLCA";
+        break;
+    case CPU::IN_ADD:
+		return "IN_ADD";
+        break;
+    case CPU::IN_RRCA:
+		return "IN_RRCA";
+        break;
+    case CPU::IN_STOP:
+		return "IN_STOP";
+        break;
+    case CPU::IN_RLA:
+		return "IN_RLA";
+        break;
+    case CPU::IN_JR:
+		return "IN_JR";
+        break;
+    case CPU::IN_RRA:
+		return "IN_RRA";
+        break;
+    case CPU::IN_DAA:
+		return "IN_DAA";
+        break;
+    case CPU::IN_CPL:
+		return "IN_CPL";
+        break;
+    case CPU::IN_SCF:
+		return "IN_SCF";
+        break;
+    case CPU::IN_CCF:
+		return "IN_CCF";
+        break;
+    case CPU::IN_HALT:
+		return "IN_HALT";
+        break;
+    case CPU::IN_ADC:
+		return "IN_ADC";
+        break;
+    case CPU::IN_SUB:
+		return "IN_SUB";
+        break;
+    case CPU::IN_SBC:
+		return "IN_SBC";
+        break;
+    case CPU::IN_AND:
+		return "IN_AND";
+        break;
+    case CPU::IN_XOR:
+		return "IN_XOR";
+        break;
+    case CPU::IN_OR:
+		return "IN_OR";
+        break;
+    case CPU::IN_CP:
+		return "IN_CP";
+        break;
+    case CPU::IN_POP:
+		return "IN_POP";
+        break;
+    case CPU::IN_JP:
+		return "IN_JP";
+        break;
+    case CPU::IN_PUSH:
+		return "IN_PUSH";
+        break;
+    case CPU::IN_RET:
+		return "IN_RET";
+        break;
+    case CPU::IN_CB:
+		return "IN_CB";
+        break;
+    case CPU::IN_CALL:
+		return "IN_CALL";
+        break;
+    case CPU::IN_RETI:
+		return "IN_RETI";
+        break;
+    case CPU::IN_LDH:
+		return "IN_LDH";
+        break;
+    case CPU::IN_DI:
+		return "IN_DI";
+        break;
+    case CPU::IN_EI:
+		return "IN_EI";
+        break;
+    case CPU::IN_RST:
+		return "IN_RST";
+        break;
+    case CPU::IN_ERR:
+		return "IN_ERR";
+        break;
+    case CPU::IN_RLC:
+		return "IN_RLC";
+        break;
+    case CPU::IN_RRC:
+		return "IN_RRC";
+        break;
+    case CPU::IN_RL:
+		return "IN_RL";
+        break;
+    case CPU::IN_RR:
+		return "IN_RR";
+        break;
+    case CPU::IN_SLA:
+		return "IN_SLA";
+        break;
+    case CPU::IN_SRA:
+		return "IN_SRA";
+        break;
+    case CPU::IN_SWAP:
+		return "IN_SWAP";
+        break;
+    case CPU::IN_SRL:
+		return "IN_SRL";
+        break;
+    case CPU::IN_BIT:
+		return "IN_BIT";
+        break;
+    case CPU::IN_RES:
+		return "IN_RES";
+        break;
+    case CPU::IN_SET:
+		return "IN_SET";
+        break;
+    default:
+        break;
+    }
+}
+
+void CPU::procLD(Bus& bus)
+{
+    if (destIsMem)
+    {
+        if (currentInstruction.RT2 >= RT_AF)
+        {
+            bus.write16(destMem, fetchDataVal);
+        }
+        else
+        {
+		    bus.write(destMem, fetchDataVal);
+        }
+	}
+    else if (currentInstruction.AM == AM_HL_SPR)
+    {
+        bool cFlag = (((readRegister(currentInstruction.RT2) & 0xFF) + fetchDataVal) > 0xFF);
+        bool hFlag = (((readRegister(currentInstruction.RT2) & 0xFF) + fetchDataVal) > 0xF);
+
+		setFlags(0, 0, hFlag, cFlag);
+
+        writeRegister(currentInstruction.RT1, readRegister(currentInstruction.RT2) + fetchDataVal);
+    }
+    else
+    {
+		writeRegister(currentInstruction.RT1, fetchDataVal);
+    }
+}
+
+bool CPU::checkCond(CT cond)
+{
+    bool c = reg.F & 0x80 >> 7;
+    bool z = reg.F & 0x10 >> 4;
+    if (cond == CT_Z)
+        return z;
+    else if (cond == CT_NZ)
+        return !z;
+	else if (cond == CT_C)
+		return c;
+	else if (cond == CT_NC)
+		return !c;
+	else
+	{
+		std::cerr << "Invalid condition: " << static_cast<int>(cond) << "\n";
+		exit(1);
+	}
+}
+
+void CPU::procJP()
+{
+    if ((currentInstruction.condition == CT_C) && checkCond(currentInstruction.condition))
+        reg.PC = fetchDataVal;
+    else if ((currentInstruction.condition == CT_NC) && checkCond(currentInstruction.condition))
+        reg.PC = fetchDataVal;
+    else if ((currentInstruction.condition == CT_Z) && checkCond(currentInstruction.condition))
+        reg.PC = fetchDataVal;
+    else if ((currentInstruction.condition == CT_NZ) && checkCond(currentInstruction.condition))
+        reg.PC = fetchDataVal;
+    else
+        reg.PC = fetchDataVal;
 }

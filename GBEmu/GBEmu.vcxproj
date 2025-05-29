@@ -32,6 +32,7 @@
     <ClInclude Include="GBRomReader.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="game.gb" />
     <None Include="Pokemon_Rouge.gb" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

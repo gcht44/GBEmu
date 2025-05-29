@@ -19,8 +19,7 @@ const GBRomReader::Header& GBRomReader::getHeader() const
 
 std::vector<uint8_t> GBRomReader::getOpcodes() const
 {
-    if (romBuffer.size() <= 0x150) return {};
-    return { romBuffer.begin() + 0x150, romBuffer.end() };
+    return { romBuffer };
 }
 
 void GBRomReader::parseHeader() {

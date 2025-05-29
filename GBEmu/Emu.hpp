@@ -9,18 +9,11 @@
 class Emu {
 public:
 	Emu(std::vector<uint8_t> memory) : bus(std::move(memory)), cpu() {};
-	void run() {
-		while (cpu.isRunning()) {
-			if (cpu.isHalted()) {
-				continue;
-			}
-			uint8_t opcode = bus.read(cpu.readRegister16bit(CPU::RT_PC));
-			cpu.executeOpcode(opcode, bus);
-		}
-	}
+	void run(bool d=false);
 private:
 	Bus bus;
 	CPU cpu;
+	bool debug;
 };
 
 #endif

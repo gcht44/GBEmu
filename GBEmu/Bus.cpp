@@ -132,3 +132,15 @@ void Bus::write(uint16_t addr, uint8_t val)
 		exit(1);
 	}
 }
+
+uint16_t Bus::read16(uint16_t address) {
+	uint16_t lo = read(address);
+	uint16_t hi = read(address + 1);
+
+	return lo | (hi << 8);
+}
+
+void Bus::write16(uint16_t address, uint16_t value) {
+	write(address + 1, (value >> 8) & 0xFF);
+	write(address, value & 0xFF);
+}
