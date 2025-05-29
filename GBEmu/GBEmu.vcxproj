@@ -24,12 +24,14 @@
     <ClCompile Include="Emu.cpp" />
     <ClCompile Include="GBRomReader.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Stack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bus.hpp" />
     <ClInclude Include="CPU.hpp" />
     <ClInclude Include="Emu.hpp" />
     <ClInclude Include="GBRomReader.hpp" />
+    <ClInclude Include="Stack.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="game.gb" />
