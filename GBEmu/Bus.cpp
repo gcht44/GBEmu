@@ -144,3 +144,33 @@ void Bus::write16(uint16_t address, uint16_t value) {
 	write(address + 1, (value >> 8) & 0xFF);
 	write(address, value & 0xFF);
 }
+
+void Bus::writeRAM(uint16_t addr, uint8_t val)
+{
+	addr -= 0xC000;
+
+	RAM[addr] = val;
+}
+uint8_t Bus::readRAM(uint16_t addr)
+{
+	addr -= 0xC000;
+
+	if (addr >= 0x2000) {
+		std::cout << "INVALID RAM ADDR\n";
+		exit(-1);
+	}
+
+	return RAM[addr];
+}
+
+void Bus::writeHRAM(uint16_t addr, uint8_t val)
+{
+	addr -= 0xFF80;
+	HRAM[addr] = val;
+}
+uint8_t Bus:: readHRAM(uint16_t addr)
+{
+	addr -= 0xFF80;
+
+	return HRAM[addr];
+}

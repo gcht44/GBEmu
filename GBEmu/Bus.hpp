@@ -14,6 +14,13 @@ public:
 	void write16(uint16_t address, uint16_t value);
 private:
 	std::vector<uint8_t> memory;
+	std::vector<uint8_t> RAM;
+	std::vector<uint8_t> HRAM;
+
+	void writeRAM(uint16_t addr, uint8_t val);
+	uint8_t readRAM(uint16_t addr);
+	void writeHRAM(uint16_t addr, uint8_t val);
+	uint8_t readHRAM(uint16_t addr);
 };
 
 
