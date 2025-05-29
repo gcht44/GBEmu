@@ -59,24 +59,24 @@ public:
 		IN_INC, // OK
 		IN_DEC, // OK
 		IN_RLCA,
-		IN_ADD,
+		IN_ADD, // OK
 		IN_RRCA,
 		IN_STOP,
 		IN_RLA,
-		IN_JR,
+		IN_JR, // OK
 		IN_RRA,
 		IN_DAA,
 		IN_CPL,
 		IN_SCF,
 		IN_CCF,
 		IN_HALT,
-		IN_ADC,
+		IN_ADC, // OK
 		IN_SUB,
 		IN_SBC,
-		IN_AND,
-		IN_XOR,
-		IN_OR,
-		IN_CP,
+		IN_AND, // OK
+		IN_XOR, // OK
+		IN_OR, // OK
+		IN_CP, // OK
 		IN_POP,
 		IN_JP, // OK
 		IN_PUSH,
@@ -169,6 +169,13 @@ private:
 	void procDEC(Bus& bus);
 	void procADD(Bus& bus);
 	void procJR();
+	void procAND();
+	void procOR();
+	void procXOR();
+	void procCP();
+	void procADC();
+	void procSUB();
+	void procSBC();
 };
 
 #endif

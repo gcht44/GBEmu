@@ -8,6 +8,8 @@ Status development:
     - DEC -> Test
     - ADD -> Test
     - JR -> Test
+    - OR -> Test
+    - AND -> Test
 */
 
 CPU::CPU()
@@ -782,11 +784,21 @@ void CPU::procDEC(Bus& bus)
 
 void CPU::procADD(Bus& bus)
 {
-	uint16_t value = readRegister(currentInstruction.RT1) + fetchDataVal;
-	writeRegister(currentInstruction.RT1, value & 0xFFFF);
-	bool hFlag = ((readRegister(currentInstruction.RT1) & 0xFF) + (fetchDataVal & 0xFF)) > 0xF;
-	bool cFlag = value > 0xFFFF;
-	setFlags(-1, 0, hFlag, cFlag);
+    if (currentInstruction.RT1 >= RT_AF)
+    {
+	    uint32_t value = readRegister(currentInstruction.RT1) + fetchDataVal;
+	    writeRegister(currentInstruction.RT1, value & 0xFFFF);
+	    bool hFlag = ((readRegister(currentInstruction.RT1) & 0xFF) + (fetchDataVal & 0xFF)) > 0xF;
+	    bool cFlag = value > 0xFFFF;
+	    setFlags(-1, 0, hFlag, cFlag);
+        return;
+    }
+    uint16_t value = readRegister(currentInstruction.RT1) + fetchDataVal;
+    writeRegister(currentInstruction.RT1, value & 0xFFFF);
+    bool hFlag = ((readRegister(currentInstruction.RT1) & 0xFF) + (fetchDataVal & 0xFF)) > 0xF;
+    bool cFlag = value > 0xFFFF;
+	bool zFlag = value == 0;
+    setFlags(zFlag, 0, hFlag, cFlag);
 }
 
 void CPU::procJR()
@@ -801,4 +813,62 @@ void CPU::procJR()
         reg.PC += fetchDataVal;
     else
         reg.PC += fetchDataVal;
+}
+
+void CPU::procAND()
+{
+	reg.A &= fetchDataVal;
+	bool zFlag = (reg.A == 0);
+	setFlags(zFlag, 0, 1, 0);
+}
+void CPU::procOR()
+{
+    reg.A |= fetchDataVal;
+    bool zFlag = (reg.A == 0);
+    setFlags(zFlag, 0, 0, 0);
+}
+
+void CPU::procXOR()
+{
+    reg.A ^= fetchDataVal;
+    bool zFlag = (reg.A == 0);
+    setFlags(zFlag, 0, 0, 0);
+}
+
+void CPU::procCP()
+{
+	uint8_t value = reg.A - fetchDataVal;
+	bool zFlag = (value == 0);
+	bool hFlag = ((reg.A & 0xF) < (fetchDataVal & 0xF));
+	bool cFlag = (reg.A < fetchDataVal);
+	setFlags(zFlag, 1, hFlag, cFlag);
+}
+
+void CPU::procADC()
+{
+    uint16_t res = reg.A + fetchDataVal + ((reg.F & 0x10) >> 4); // Add A, fetchDataVal and carry if set
+	reg.A = res & 0xFF; // Store result in A
+    bool zFlag = (res == 0);
+    bool hFlag = (res & 0xFF) > 0xF;
+    bool cFlag = (reg.A < fetchDataVal);
+    setFlags(zFlag, 0, hFlag, cFlag);
+}
+
+void CPU::procSUB()
+{
+    uint16_t value = readRegister(currentInstruction.RT1) - fetchDataVal;
+    writeRegister(currentInstruction.RT1, value & 0xFFFF);
+    bool hFlag = (readRegister(currentInstruction.RT1) & 0xF) - (fetchDataVal & 0xF) < 0;
+    bool cFlag = (readRegister(currentInstruction.RT1) - fetchDataVal) < 0;
+    bool zFlag = value == 0;
+    setFlags(zFlag, 1, hFlag, cFlag);
+}
+void CPU::procSBC()
+{
+    uint16_t value = readRegister(currentInstruction.RT1) - fetchDataVal - ((reg.F & 0x10) >> 4);
+    writeRegister(currentInstruction.RT1, value & 0xFFFF);
+    bool hFlag = (readRegister(currentInstruction.RT1) & 0xF) - (fetchDataVal & 0xF) < 0;
+    bool cFlag = (readRegister(currentInstruction.RT1) - fetchDataVal) < 0;
+    bool zFlag = value == 0;
+    setFlags(zFlag, 1, hFlag, cFlag);
 }
