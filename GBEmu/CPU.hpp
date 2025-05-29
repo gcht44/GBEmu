@@ -71,8 +71,8 @@ public:
 		IN_CCF,
 		IN_HALT,
 		IN_ADC, // OK
-		IN_SUB,
-		IN_SBC,
+		IN_SUB, // OK
+		IN_SBC, // OK
 		IN_AND, // OK
 		IN_XOR, // OK
 		IN_OR, // OK
@@ -176,6 +176,8 @@ private:
 	void procADC();
 	void procSUB();
 	void procSBC();
+	void procPOP();
+	void procPUSH();
 };
 
 #endif

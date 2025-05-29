@@ -18,17 +18,18 @@ uint8_t Bus::read(uint16_t addr)
 	else if (addr < 0xA000)
 	{
 		// VRAM
-		return memory[addr];
+		std::cerr << "Read error: VRAM not implemented: " << std::hex << addr << std::dec << "\n";
+		exit(1);
 	}
 	else if (addr < 0xC000)
 	{
-		// External RAM
-		return memory[addr];
+		std::cerr << "Read error: External RAM not implemented: " << std::hex << addr << std::dec << "\n";
+		exit(1);
 	}
 	else if (addr < 0xE000)
 	{
 		// Work RAM
-		return memory[addr];
+		return readRAM(addr);
 	}
 	else if (addr < 0xFE00)
 	{
@@ -55,7 +56,7 @@ uint8_t Bus::read(uint16_t addr)
 	else if (addr < 0xFFFF)
 	{
 		// High RAM
-		return memory[addr];
+		return readHRAM(addr);
 	}
 	else if (addr == 0xFFFF)
 	{
@@ -88,17 +89,19 @@ void Bus::write(uint16_t addr, uint8_t val)
 	else if (addr < 0xA000)
 	{
 		// VRAM
-		memory[addr] = val;
+		std::cout << "Write error: VRAM not implemented: " << std::hex << addr << std::dec << "\n";
+		exit(1);
 	}
 	else if (addr < 0xC000)
 	{
 		// External RAM
-		memory[addr] = val;
+		std::cout << "Write error: External RAM not implemented: " << std::hex << addr << std::dec << "\n";
+		exit(1);
 	}
 	else if (addr < 0xE000)
 	{
 		// Work RAM
-		memory[addr] = val;
+		writeRAM(addr, val);
 	}
 	else if (addr < 0xFE00)
 	{
@@ -120,7 +123,7 @@ void Bus::write(uint16_t addr, uint8_t val)
 	}
 	else if (addr < 0xFFFF)
 	{
-		memory[addr] = val; // High RAM
+		writeHRAM(addr, val); // High RAM
 	}
 	else if (addr == 0xFFFF)
 	{
