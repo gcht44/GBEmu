@@ -471,6 +471,15 @@ void CPU::executeOpcode(uint8_t opcode, Bus& bus)
 	case IN_DEC:
 		procDEC(bus);
 		break;
+	case IN_CALL:
+		procCALL(bus);
+		break;
+	case IN_RET:
+		procRET(bus);
+		break;
+	case IN_RST:
+		procRST(bus);
+		break;
     default:
         std::cerr << "Invalid OPCODE read: " << static_cast<int>(currentInstruction.IN) << "\n";
         exit(1);
@@ -965,4 +974,11 @@ void CPU::procRET(Bus& bus)
     {
         reg.PC = stack.pop16(reg, bus);
     }
+}
+
+void CPU::procRST(Bus& bus)
+{
+	stack.push16(reg.PC, reg, bus);
+	uint8_t n = (bus.read(reg.PC - 1) & 0x38);
+    reg.PC = n;
 }

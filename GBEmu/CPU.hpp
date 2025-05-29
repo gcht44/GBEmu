@@ -81,14 +81,14 @@ public:
 		IN_POP, // OK
 		IN_JP, // OK
 		IN_PUSH, // OK
-		IN_RET,
+		IN_RET, // OK
 		IN_CB,
-		IN_CALL,
+		IN_CALL, // OK
 		IN_RETI,
 		IN_LDH,
 		IN_DI,
 		IN_EI,
-		IN_RST,
+		IN_RST, // OK
 		IN_ERR,
 		//CB instructions...
 		IN_RLC,
@@ -183,6 +183,7 @@ private:
 	void procPUSH(Bus& bus);
 	void procCALL(Bus& bus);
 	void procRET(Bus& bus);
+	void procRST(Bus& bus);
 };
 
 #endif
