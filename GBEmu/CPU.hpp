@@ -181,6 +181,8 @@ private:
 	void procSBC();
 	void procPOP(Bus& bus);
 	void procPUSH(Bus& bus);
+	void procCALL(Bus& bus);
+	void procRET(Bus& bus);
 };
 
 #endif

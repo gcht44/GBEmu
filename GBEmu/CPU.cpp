@@ -914,3 +914,55 @@ void CPU::procPUSH(Bus& bus)
 {
 	stack.push16(readRegister(currentInstruction.RT1), reg, bus);
 }
+
+void CPU::procCALL(Bus& bus)
+{
+    if ((currentInstruction.condition == CT_C) && checkCond(currentInstruction.condition))
+    {
+        stack.push16(reg.PC, reg, bus);
+		reg.PC = fetchDataVal;
+    }
+    else if ((currentInstruction.condition == CT_NC) && checkCond(currentInstruction.condition))
+    {
+        stack.push16(reg.PC, reg, bus);
+        reg.PC = fetchDataVal;
+    }
+    else if ((currentInstruction.condition == CT_Z) && checkCond(currentInstruction.condition))
+    {
+        stack.push16(reg.PC, reg, bus);
+        reg.PC = fetchDataVal;
+    }
+    else if ((currentInstruction.condition == CT_NZ) && checkCond(currentInstruction.condition))
+    {
+        stack.push16(reg.PC, reg, bus);
+        reg.PC = fetchDataVal;
+    }
+    else
+    {
+        stack.push16(reg.PC, reg, bus);
+        reg.PC = fetchDataVal;
+    }
+}
+void CPU::procRET(Bus& bus)
+{
+    if ((currentInstruction.condition == CT_C) && checkCond(currentInstruction.condition))
+    {
+        reg.PC = stack.pop16(reg, bus);
+    }
+    else if ((currentInstruction.condition == CT_NC) && checkCond(currentInstruction.condition))
+    {
+        reg.PC = stack.pop16(reg, bus);
+    }
+    else if ((currentInstruction.condition == CT_Z) && checkCond(currentInstruction.condition))
+    {
+        reg.PC = stack.pop16(reg, bus);
+    }
+    else if ((currentInstruction.condition == CT_NZ) && checkCond(currentInstruction.condition))
+    {
+        reg.PC = stack.pop16(reg, bus);
+    }
+    else
+    {
+        reg.PC = stack.pop16(reg, bus);
+    }
+}
