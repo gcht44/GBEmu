@@ -4,6 +4,8 @@
 Status development:
     - LD -> OK (No blaarg test yet)
     - JP -> OK (No blaarg test yet)
+    - INC -> Test
+    - DEC -> Test
 
 */
 
@@ -709,4 +711,66 @@ void CPU::procJP()
         reg.PC = fetchDataVal;
     else
         reg.PC = fetchDataVal;
+}
+
+void CPU::procINC(Bus& bus)
+{
+	if (currentInstruction.RT1 >= RT_AF)
+	{
+		uint16_t value = readRegister(currentInstruction.RT1) + 1;
+		writeRegister(currentInstruction.RT1, value);
+        return;
+	}
+	else if (destIsMem)
+	{
+		uint8_t value = bus.read(destMem) + 1;
+		bus.write(destMem, value & 0xFF);
+
+		bool zFlag = (value == 0);
+        bool hFlag = ((value & 0xFF) > 0xF);
+
+        setFlags(zFlag, 0, hFlag, -1);
+		return;
+	}
+    else 
+    {
+        uint8_t value = readRegister(currentInstruction.RT1) + 1;
+        writeRegister(currentInstruction.RT1, value & 0xFF);
+
+        bool zFlag = (value == 0);
+        bool hFlag = ((value & 0xFF) > 0xF);
+
+        setFlags(zFlag, 0, hFlag, -1);
+    }
+}
+
+void CPU::procDEC(Bus& bus)
+{
+    if (currentInstruction.RT1 >= RT_AF)
+    {
+        uint16_t value = readRegister(currentInstruction.RT1) - 1;
+        writeRegister(currentInstruction.RT1, value);
+        return;
+    }
+    else if (destIsMem)
+    {
+        uint8_t value = bus.read(destMem) - 1;
+        bus.write(destMem, value & 0xFF);
+
+        bool zFlag = (value == 0);
+        bool hFlag = ((value & 0xFF) > 0xF);
+
+        setFlags(zFlag, 0, hFlag, -1);
+        return;
+    }
+    else
+    {
+        uint8_t value = readRegister(currentInstruction.RT1) - 1;
+        writeRegister(currentInstruction.RT1, value & 0xFF);
+
+        bool zFlag = (value == 0);
+        bool hFlag = ((value & 0xFF) > 0xF);
+
+        setFlags(zFlag, 0, hFlag, -1);
+    }
 }

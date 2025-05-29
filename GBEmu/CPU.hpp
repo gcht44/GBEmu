@@ -165,6 +165,8 @@ private:
 
 	void procLD(Bus& bus);
 	void procJP();
+	void procINC(Bus& bus);
+	void procDEC(Bus& bus);
 };
 
 #endif
