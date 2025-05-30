@@ -3,10 +3,11 @@
 
 #include <iostream>
 #include <vector>
+#include "IO.hpp"
 
 class Bus {
 public:
-	Bus(std::vector<uint8_t> mem) : memory(std::move(mem)) {};
+	Bus(std::vector<uint8_t> mem) : memory(std::move(mem)), io() {};
 	void write(uint16_t addr, uint8_t val);
 	uint8_t read(uint16_t addr);
 
@@ -17,6 +18,7 @@ private:
 	std::vector<uint8_t> RAM;
 	std::vector<uint8_t> HRAM;
 	uint8_t IE; // Interrupt Enable Register
+	IO io;
 
 	void writeRAM(uint16_t addr, uint8_t val);
 	uint8_t readRAM(uint16_t addr);
