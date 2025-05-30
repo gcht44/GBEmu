@@ -59,17 +59,17 @@ public:
 		IN_LD, // OK
 		IN_INC, // OK
 		IN_DEC, // OK
-		IN_RLCA,
+		IN_RLCA, // OK
 		IN_ADD, // OK
-		IN_RRCA,
+		IN_RRCA, // OK
 		IN_STOP,
 		IN_RLA,
 		IN_JR, // OK
-		IN_RRA,
-		IN_DAA,
-		IN_CPL,
-		IN_SCF,
-		IN_CCF,
+		IN_RRA, // OK
+		IN_DAA, // OK
+		IN_CPL, // OK
+		IN_SCF, // OK
+		IN_CCF, // OK
 		IN_HALT,
 		IN_ADC, // OK
 		IN_SUB, // OK
@@ -84,7 +84,7 @@ public:
 		IN_RET, // OK
 		IN_CB,
 		IN_CALL, // OK
-		IN_RETI,
+		IN_RETI, // OK
 		IN_LDH,
 		IN_DI,
 		IN_EI,
@@ -137,6 +137,8 @@ public:
 
 		uint16_t SP;
 		uint16_t PC;
+
+		bool IME; // Interrupt Master Enable
 	};
 
 
@@ -184,6 +186,14 @@ private:
 	void procCALL(Bus& bus);
 	void procRET(Bus& bus);
 	void procRST(Bus& bus);
+	void procSCF();
+	void procCCF();
+	void procRETI(Bus& bus);
+	void procRLCA();
+	void procRRCA();
+	void procRRA();
+	void procDAA();
+	void procCPL();
 };
 
 #endif

@@ -16,11 +16,15 @@ private:
 	std::vector<uint8_t> memory;
 	std::vector<uint8_t> RAM;
 	std::vector<uint8_t> HRAM;
+	uint8_t IE; // Interrupt Enable Register
 
 	void writeRAM(uint16_t addr, uint8_t val);
 	uint8_t readRAM(uint16_t addr);
 	void writeHRAM(uint16_t addr, uint8_t val);
 	uint8_t readHRAM(uint16_t addr);
+
+	void writeIE(uint8_t val);
+	uint8_t readIE();
 };
 
 

@@ -61,7 +61,7 @@ uint8_t Bus::read(uint16_t addr)
 	else if (addr == 0xFFFF)
 	{
 		// Interrupt Enable Register
-		return memory[addr];
+		return readIE();
 	}
 	else
 	{
@@ -127,7 +127,7 @@ void Bus::write(uint16_t addr, uint8_t val)
 	}
 	else if (addr == 0xFFFF)
 	{
-		memory[addr] = val; // Interrupt Enable Register
+		writeIE(val); // Interrupt Enable Register
 	}
 	else
 	{
@@ -176,4 +176,13 @@ uint8_t Bus:: readHRAM(uint16_t addr)
 	addr -= 0xFF80;
 
 	return HRAM[addr];
+}
+
+void Bus::writeIE(uint8_t val)
+{
+	IE = val;
+}
+uint8_t Bus::readIE()
+{
+	return IE;
 }

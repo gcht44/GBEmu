@@ -480,6 +480,36 @@ void CPU::executeOpcode(uint8_t opcode, Bus& bus)
 	case IN_RST:
 		procRST(bus);
 		break;
+	case IN_RETI:
+		procRETI(bus);
+		break;
+	case IN_POP:
+		procPOP(bus);
+		break;
+	case IN_PUSH:
+		procPUSH(bus);
+		break;
+	case IN_SCF:
+		procSCF();
+		break;
+	case IN_CCF:
+		procCCF();
+		break;
+	case IN_RRCA:
+		procRRCA();
+		break;
+	case IN_RLCA:
+		procRLCA();
+		break;
+	case IN_RRA:
+		procRRA();
+		break;
+	case IN_DAA:
+		procDAA();
+		break;
+	case IN_CPL:
+		procCPL();
+		break;
     default:
         std::cerr << "Invalid OPCODE read: " << static_cast<int>(currentInstruction.IN) << "\n";
         exit(1);
@@ -981,4 +1011,76 @@ void CPU::procRST(Bus& bus)
 	stack.push16(reg.PC, reg, bus);
 	uint8_t n = (bus.read(reg.PC - 1) & 0x38);
     reg.PC = n;
+}
+
+void CPU::procSCF()
+{
+    setFlags(-1, 0, 0, 1);
+}
+
+void CPU::procCCF()
+{
+    setFlags(-1, 0, 0, ((reg.F & 0x10) >> 4) ^ 1);
+}
+
+void CPU::procRETI(Bus& bus)
+{
+	procRET(bus);
+	reg.IME = true;
+}
+
+void CPU::procRLCA()
+{
+	uint8_t aTemp = reg.A;
+    bool c = (aTemp >> 7) & 1;
+    aTemp = (aTemp << 1) | c;
+    reg.A = aTemp;
+
+    setFlags(0, 0, 0, c);
+}
+void CPU::procRRCA()
+{
+    uint8_t c = reg.A & 1;
+    reg.A = reg.A >> 1;
+    reg.A |= (c << 7);
+
+    setFlags(0, 0, 0, c);
+}
+
+void CPU::procRRA()
+{
+    uint8_t c = reg.F & 0x10;
+    uint8_t newC = reg.A & 1;
+
+    reg.A = reg.A >> 1;
+    reg.A |= (c << 7);
+
+    setFlags(0, 0, 0, newC);
+}
+void CPU::procDAA()
+{
+    uint8_t u = 0;
+    int fc = 0;
+
+	bool flagC = (reg.F & 0x10) >> 4;
+    bool flagH = (reg.F & 0x20) >> 5;
+    bool flagN = (reg.F & 0x40) >> 6;
+
+    if (flagH || (!flagN && (reg.A & 0xF) > 9)) {
+        u = 6;
+    }
+
+    if (flagC || (!flagN && reg.A > 0x99)) {
+        u |= 0x60;
+        fc = 1;
+    }
+
+    reg.A += flagN ? -u : u;
+
+    setFlags(reg.A == 0, -1, 0, fc);
+}
+void CPU::procCPL()
+{
+    reg.A = ~reg.A;
+	setFlags(-1, 1, 1, -1); 
 }
