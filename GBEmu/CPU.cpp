@@ -513,6 +513,9 @@ void CPU::executeOpcode(uint8_t opcode, Bus& bus)
 	case IN_RLA:
 		procRLA();
 		break;
+	case IN_LDH:
+		procLDH(bus);
+		break;
     default:
         std::cerr << "Invalid OPCODE read: " << static_cast<int>(currentInstruction.IN) << "\n";
         exit(1);
@@ -523,6 +526,7 @@ void CPU::fetchData(Bus& bus)
 {
     uint16_t lo;
     uint16_t hi;
+    uint16_t addr;
 	switch (currentInstruction.AM)
 	{
 	case AM_IMP: break;
@@ -549,19 +553,34 @@ void CPU::fetchData(Bus& bus)
 		break;
 
 	case AM_HLI_R:
-		// Handle HLI operation
+        fetchDataVal = readRegister(currentInstruction.RT2);
+        destMem = readRegister(currentInstruction.RT1);
+        destIsMem = true;
+        writeRegister(RT_HL, readRegister(RT_HL) + 1);
 		break;
 	case AM_HLD_R:
-		// Handle HLD operation
+        fetchDataVal = readRegister(currentInstruction.RT2);
+        destMem = readRegister(currentInstruction.RT1);
+        destIsMem = true;
+        writeRegister(RT_HL, readRegister(RT_HL) - 1);
 		break;
-
+    case AM_R_HLI:
+		fetchDataVal = bus.read(readRegister(RT_HL));
+        writeRegister(RT_HL, readRegister(RT_HL) + 1);
+        break;
+    case AM_R_HLD:
+        fetchDataVal = bus.read(readRegister(RT_HL));
+        writeRegister(RT_HL, readRegister(RT_HL) - 1);
+        break;
 	case AM_R_A8:
-		
+		addr = bus.read(reg.PC++) | 0xFF00;
+		fetchDataVal = bus.read(addr);
 		break;
 	case AM_A8_R:
         destMem = bus.read(reg.PC++);
         destMem |= 0xFF00;
         destIsMem = true;
+		fetchDataVal = readRegister(currentInstruction.RT2);
 		break;
 	case AM_R:
         fetchDataVal = readRegister(currentInstruction.RT1);
@@ -1096,4 +1115,14 @@ void CPU::procRLA()
 
     reg.A = (aTemp << 1) | cFlag;
     setFlags(0, 0, 0, c);
+}
+
+void CPU::procLDH(Bus& bus)
+{
+    if (destIsMem)
+    {
+		bus.write(destMem, fetchDataVal);
+        return;
+    }
+	reg.A = fetchDataVal;
 }

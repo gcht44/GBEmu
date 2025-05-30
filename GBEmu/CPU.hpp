@@ -63,7 +63,7 @@ public:
 		IN_ADD, // OK
 		IN_RRCA, // OK
 		IN_STOP,
-		IN_RLA,
+		IN_RLA, // OK
 		IN_JR, // OK
 		IN_RRA, // OK
 		IN_DAA, // OK
@@ -195,6 +195,7 @@ private:
 	void procDAA();
 	void procCPL();
 	void procRLA();
+	void procLDH(Bus& bus);
 };
 
 #endif
