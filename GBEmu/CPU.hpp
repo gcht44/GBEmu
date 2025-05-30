@@ -194,6 +194,7 @@ private:
 	void procRRA();
 	void procDAA();
 	void procCPL();
+	void procRLA();
 };
 
 #endif

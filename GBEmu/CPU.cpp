@@ -510,6 +510,9 @@ void CPU::executeOpcode(uint8_t opcode, Bus& bus)
 	case IN_CPL:
 		procCPL();
 		break;
+	case IN_RLA:
+		procRLA();
+		break;
     default:
         std::cerr << "Invalid OPCODE read: " << static_cast<int>(currentInstruction.IN) << "\n";
         exit(1);
@@ -1083,4 +1086,14 @@ void CPU::procCPL()
 {
     reg.A = ~reg.A;
 	setFlags(-1, 1, 1, -1); 
+}
+
+void CPU::procRLA()
+{
+    uint8_t aTemp = reg.A;
+    uint8_t cFlag = (reg.F & 0x10) >> 4;
+    uint8_t c = (aTemp >> 7) & 1;
+
+    reg.A = (aTemp << 1) | cFlag;
+    setFlags(0, 0, 0, c);
 }
