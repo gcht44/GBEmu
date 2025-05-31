@@ -51,7 +51,7 @@ uint8_t Bus::read(uint16_t addr)
 	else if (addr < 0xFF80)
 	{
 		// I/O ports
-		return memory[addr];
+		return io.readIO(addr);
 	}
 	else if (addr < 0xFFFF)
 	{
@@ -119,7 +119,7 @@ void Bus::write(uint16_t addr, uint8_t val)
 	}
 	else if (addr < 0xFF80)
 	{
-		memory[addr] = val; // I/O ports
+		io.writeIO(addr, val); // I/O ports
 	}
 	else if (addr < 0xFFFF)
 	{

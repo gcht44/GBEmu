@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Bus.cpp" />
     <ClCompile Include="CPU.cpp" />
+    <ClCompile Include="dbg.hpp" />
     <ClCompile Include="Emu.cpp" />
     <ClCompile Include="GBRomReader.cpp" />
     <ClCompile Include="IO.cpp" />
