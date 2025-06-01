@@ -640,6 +640,7 @@ void CPU::fetchData(Bus& bus)
         break;
     case AM_D16:
         fetchDataVal = bus.read16(reg.PC++);
+        reg.PC++;
         break;
 	case AM_R_R:
 		fetchDataVal = readRegister(currentInstruction.RT2);
@@ -1035,6 +1036,7 @@ void CPU::procCALL(Bus& bus)
     if (checkCond(currentInstruction.condition))
     {
         stack->push16(reg.PC, reg, bus);
+		std::cout << "PUSH PC: " << std::hex << reg.PC << "\n";
 		reg.PC = fetchDataVal;
         return;
     }
@@ -1141,7 +1143,7 @@ void CPU::procLDH(Bus& bus)
     if (destIsMem)
     {
 		bus.write(destMem, fetchDataVal);
-        std::cout << "PC IN LDH " << reg.PC << "\n";
+
     }
     else
     {

@@ -7,7 +7,7 @@
 
 class Bus {
 public:
-	Bus(std::vector<uint8_t> mem) : memory(std::move(mem)), io(), RAM(0x2000), VRAM(0x2000) {}; // RAM(0x2000) initializes 8KB of RAM
+	Bus(std::vector<uint8_t> mem) : memory(std::move(mem)), io(), RAM(0x2000), VRAM(0x2000), HRAM(0x80) {}; // RAM(0x2000) initializes 8KB of RAM
 	void write(uint16_t addr, uint8_t val);
 	uint8_t read(uint16_t addr);
 
