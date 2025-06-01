@@ -556,6 +556,9 @@ void CPU::executeOpcode(uint8_t opcode, Bus& bus)
 		break;
 	case IN_LDH:
 		procLDH(bus);
+    case IN_JR:
+        procJR();
+		break;
 		break;
     default:
         std::cerr << "Invalid OPCODE read: " << static_cast<int>(currentInstruction.IN) << "\n";
@@ -945,15 +948,15 @@ void CPU::procADD(Bus& bus)
 void CPU::procJR()
 {
     if ((currentInstruction.condition == CT_C) && checkCond(currentInstruction.condition))
-        reg.PC += fetchDataVal;
+        reg.PC += (int8_t)fetchDataVal;
     else if ((currentInstruction.condition == CT_NC) && checkCond(currentInstruction.condition))
-        reg.PC += fetchDataVal;
+        reg.PC += (int8_t)fetchDataVal;
     else if ((currentInstruction.condition == CT_Z) && checkCond(currentInstruction.condition))
-        reg.PC += fetchDataVal;
+        reg.PC += (int8_t)fetchDataVal;
     else if ((currentInstruction.condition == CT_NZ) && checkCond(currentInstruction.condition))
-        reg.PC += fetchDataVal;
+        reg.PC += (int8_t)fetchDataVal;
     else
-        reg.PC += fetchDataVal;
+        reg.PC += (int8_t)fetchDataVal;
 }
 
 void CPU::procAND()
