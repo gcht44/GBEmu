@@ -14,3 +14,4 @@ void DBG::print() {
 	{
 		std::cout << "DBG: " << msg;
 	}
+}

@@ -412,6 +412,26 @@ void CPU::setFlags(char z, char n, char h, char c)
 
 void CPU::executeOpcode(uint8_t opcode, Bus& bus)
 {
+    std::ostringstream oss;
+    oss << std::uppercase << std::setfill('0');
+    oss << "A:" << std::setw(2) << std::hex << reg.A << " ";
+    oss << "F:" << std::setw(2) << reg.F << " ";
+    oss << "B:" << std::setw(2) << reg.B << " ";
+    oss << "C:" << std::setw(2) << reg.C << " ";
+    oss << "D:" << std::setw(2) << reg.D << " ";
+    oss << "E:" << std::setw(2) << reg.E << " ";
+    oss << "H:" << std::setw(2) << reg.H << " ";
+    oss << "L:" << std::setw(2) << reg.L << "  ";
+    oss << "SP:" << std::setw(4) << reg.SP << " ";
+    oss << "PC:" << std::setw(4) << reg.PC;
+
+    std::ofstream file("etat_cpu.txt");
+    if (file.is_open()) 
+    {
+        file << oss.str();
+        file.close();
+	}
+
     uint16_t pc = reg.PC;
 	destIsMem = false;
     currentInstruction = OpcodeToInstruction(opcode);
@@ -429,6 +449,9 @@ void CPU::executeOpcode(uint8_t opcode, Bus& bus)
         << " L: " << std::hex << static_cast<int>(reg.L)
         << " SP: " << std::hex << static_cast<int>(reg.SP)
         << "\n";
+
+    dbg.update(bus);
+    dbg.print();
 
     switch (currentInstruction.IN)
     {
@@ -544,7 +567,8 @@ void CPU::fetchData(Bus& bus)
         destMem = readRegister(currentInstruction.RT1);
         destIsMem = true;
 
-        if (currentInstruction.RT1 == RT_C) {
+        if (currentInstruction.RT1 == RT_C) 
+        {
             destMem |= 0xFF00;
         }
 		break;

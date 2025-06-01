@@ -5,144 +5,147 @@
 #include <map>
 #include "Bus.hpp"
 #include "Stack.hpp"
+#include "DBG.hpp"
+#include <fstream>
+#include <iomanip>
+#include <sstream>
+
+enum RegType
+{
+	RT_NONE,
+	RT_A,
+	RT_F,
+	RT_B,
+	RT_C,
+	RT_D,
+	RT_E,
+	RT_H,
+	RT_L,
+	RT_AF,
+	RT_BC,
+	RT_DE,
+	RT_HL,
+	RT_SP,
+	RT_PC
+};
+
+enum AddrMode
+{
+	AM_IMP,
+	AM_R_D16,
+	AM_R_R,
+	AM_MR_R,
+	AM_R,
+	AM_R_D8,
+	AM_R_MR,
+	AM_R_HLI,
+	AM_R_HLD,
+	AM_HLI_R,
+	AM_HLD_R,
+	AM_R_A8,
+	AM_A8_R,
+	AM_HL_SPR,
+	AM_D16,
+	AM_D8,
+	AM_D16_R,
+	AM_MR_D8,
+	AM_MR,
+	AM_A16_R,
+	AM_R_A16
+};
+
+enum Instruction
+{
+	IN_NONE,
+	IN_NOP, // OK
+	IN_LD, // OK
+	IN_INC, // OK
+	IN_DEC, // OK
+	IN_RLCA, // OK
+	IN_ADD, // OK
+	IN_RRCA, // OK
+	IN_STOP,
+	IN_RLA, // OK
+	IN_JR, // OK
+	IN_RRA, // OK
+	IN_DAA, // OK
+	IN_CPL, // OK
+	IN_SCF, // OK
+	IN_CCF, // OK
+	IN_HALT,
+	IN_ADC, // OK
+	IN_SUB, // OK
+	IN_SBC, // OK
+	IN_AND, // OK
+	IN_XOR, // OK
+	IN_OR, // OK
+	IN_CP, // OK
+	IN_POP, // OK
+	IN_JP, // OK
+	IN_PUSH, // OK
+	IN_RET, // OK
+	IN_CB,
+	IN_CALL, // OK
+	IN_RETI, // OK
+	IN_LDH,
+	IN_DI,
+	IN_EI,
+	IN_RST, // OK
+	IN_ERR,
+	//CB instructions...
+	IN_RLC,
+	IN_RRC,
+	IN_RL,
+	IN_RR,
+	IN_SLA,
+	IN_SRA,
+	IN_SWAP,
+	IN_SRL,
+	IN_BIT,
+	IN_RES,
+	IN_SET
+};
+
+enum CT
+{
+	CT_NONE,
+	CT_C,
+	CT_NC,
+	CT_Z,
+	CT_NZ
+};
+
+struct OpcodeInfo
+{
+	Instruction IN;
+	AddrMode AM;
+	RegType RT1;
+	RegType RT2;
+	CT condition;
+};
+
+std::map<uint8_t, OpcodeInfo> OpcodeTable;
+
+struct Register
+{
+	uint8_t A;
+	uint8_t F;
+	uint8_t B;
+	uint8_t C;
+	uint8_t D;
+	uint8_t E;
+	uint8_t H;
+	uint8_t L;
+
+	uint16_t SP;
+	uint16_t PC;
+
+	bool IME; // Interrupt Master Enable
+};
 
 class CPU {
 public:
-	enum RegType
-	{
-		RT_NONE,
-		RT_A,
-		RT_F,
-		RT_B,
-		RT_C,
-		RT_D,
-		RT_E,
-		RT_H,
-		RT_L,
-		RT_AF,
-		RT_BC,
-		RT_DE,
-		RT_HL,
-		RT_SP,
-		RT_PC
-	};
-
-	enum AddrMode
-	{
-		AM_IMP,
-		AM_R_D16,
-		AM_R_R,
-		AM_MR_R,
-		AM_R,
-		AM_R_D8,
-		AM_R_MR,
-		AM_R_HLI,
-		AM_R_HLD,
-		AM_HLI_R,
-		AM_HLD_R,
-		AM_R_A8,
-		AM_A8_R,
-		AM_HL_SPR,
-		AM_D16,
-		AM_D8,
-		AM_D16_R,
-		AM_MR_D8,
-		AM_MR,
-		AM_A16_R,
-		AM_R_A16
-	};
-
-	enum Instruction
-	{
-		IN_NONE,
-		IN_NOP, // OK
-		IN_LD, // OK
-		IN_INC, // OK
-		IN_DEC, // OK
-		IN_RLCA, // OK
-		IN_ADD, // OK
-		IN_RRCA, // OK
-		IN_STOP,
-		IN_RLA, // OK
-		IN_JR, // OK
-		IN_RRA, // OK
-		IN_DAA, // OK
-		IN_CPL, // OK
-		IN_SCF, // OK
-		IN_CCF, // OK
-		IN_HALT,
-		IN_ADC, // OK
-		IN_SUB, // OK
-		IN_SBC, // OK
-		IN_AND, // OK
-		IN_XOR, // OK
-		IN_OR, // OK
-		IN_CP, // OK
-		IN_POP, // OK
-		IN_JP, // OK
-		IN_PUSH, // OK
-		IN_RET, // OK
-		IN_CB,
-		IN_CALL, // OK
-		IN_RETI, // OK
-		IN_LDH,
-		IN_DI,
-		IN_EI,
-		IN_RST, // OK
-		IN_ERR,
-		//CB instructions...
-		IN_RLC,
-		IN_RRC,
-		IN_RL,
-		IN_RR,
-		IN_SLA,
-		IN_SRA,
-		IN_SWAP,
-		IN_SRL,
-		IN_BIT,
-		IN_RES,
-		IN_SET
-	};
-
-	enum CT
-	{
-		CT_NONE,
-		CT_C,
-		CT_NC,
-		CT_Z,
-		CT_NZ
-	};
-
-	struct OpcodeInfo
-	{
-		Instruction IN;
-		AddrMode AM;
-		RegType RT1;
-		RegType RT2;
-		CT condition;
-	};
-
-    std::map<uint8_t, OpcodeInfo> OpcodeTable;
-
-	struct Register 
-	{
-		uint8_t A;
-		uint8_t F;
-		uint8_t B;
-		uint8_t C;
-		uint8_t D;
-		uint8_t E;
-		uint8_t H;
-		uint8_t L;
-
-		uint16_t SP;
-		uint16_t PC;
-
-		bool IME; // Interrupt Master Enable
-	};
-
-
-	CPU() : stack() {};
+	CPU() : stack(), dbg() {};
 	bool isHalted() const { return halted; }
 	bool isRunning() const { return running; }
 
@@ -153,6 +156,7 @@ public:
 	void executeOpcode(uint8_t opcode, Bus& bus);
 private:
 	Stack stack;
+	DBG dbg;
 
 	Register reg;
 	OpcodeInfo currentInstruction;
