@@ -902,9 +902,9 @@ void CPU::procDEC(Bus& bus)
         bus.write(destMem, value & 0xFF);
 
         bool zFlag = (value == 0);
-        bool hFlag = ((value & 0xFF) > 0xF);
+        bool hFlag = (value & 0x0F) == 0x0F;
 
-        setFlags(zFlag, 0, hFlag, -1);
+        setFlags(zFlag, 1, hFlag, -1);
         return;
     }
     else
@@ -913,9 +913,9 @@ void CPU::procDEC(Bus& bus)
         writeRegister(currentInstruction.RT1, value & 0xFF);
 
         bool zFlag = (value == 0);
-        bool hFlag = ((value & 0xFF) > 0xF);
+        bool hFlag = (value & 0x0F) == 0x0F;
 
-        setFlags(zFlag, 0, hFlag, -1);
+        setFlags(zFlag, 1, hFlag, -1);
     }
 }
 
