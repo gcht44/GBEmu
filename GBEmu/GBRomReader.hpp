@@ -17,7 +17,7 @@ public:
         uint8_t ramSize = 0;
         bool checksumValid = false;
     };
-
+    GBRomReader() : romBuffer(0xFFFF) {};
     void load(const std::string& filePath);
 
     const Header& getHeader() const;

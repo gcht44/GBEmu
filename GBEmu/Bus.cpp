@@ -19,12 +19,13 @@ uint8_t Bus::read(uint16_t addr)
 	{
 		// VRAM
 		std::cerr << "Read error: VRAM not implemented: " << std::hex << addr << std::dec << "\n";
-		exit(1);
+		return VRAM[addr - 0x8000]; // Return VRAM value, but this is not implemented yet
+		// exit(1);
 	}
 	else if (addr < 0xC000)
 	{
 		std::cerr << "Read error: External RAM not implemented: " << std::hex << addr << std::dec << "\n";
-		exit(1);
+		// exit(1);
 	}
 	else if (addr < 0xE000)
 	{
@@ -35,7 +36,7 @@ uint8_t Bus::read(uint16_t addr)
 	{
 		// Echo RAM
 		std::cerr << "Read error: Echo RAM not usable: " << std::hex << addr << std::dec << "\n";
-		exit(1);
+		// exit(1);
 	}
 	else if (addr < 0xFEA0)
 	{
@@ -46,7 +47,7 @@ uint8_t Bus::read(uint16_t addr)
 	{
 		// Unusable area
 		std::cerr << "Read error: Unusable area: " << std::hex << addr << std::dec << "\n";
-		exit(1);
+		// exit(1);
 	}
 	else if (addr < 0xFF80)
 	{
@@ -89,14 +90,15 @@ void Bus::write(uint16_t addr, uint8_t val)
 	else if (addr < 0xA000)
 	{
 		// VRAM
+		VRAM[addr - 0x8000] = val;
 		std::cout << "Write error: VRAM not implemented: " << std::hex << addr << std::dec << "\n";
-		exit(1);
+		// exit(1);
 	}
 	else if (addr < 0xC000)
 	{
 		// External RAM
 		std::cout << "Write error: External RAM not implemented: " << std::hex << addr << std::dec << "\n";
-		exit(1);
+		// exit(1);
 	}
 	else if (addr < 0xE000)
 	{
@@ -106,7 +108,7 @@ void Bus::write(uint16_t addr, uint8_t val)
 	else if (addr < 0xFE00)
 	{
 		std::cerr << "Write error: Echo RAM not usable: " << std::hex << addr << std::dec << "\n";
-		exit(1);
+		// exit(1);
 	}
 	else if (addr < 0xFEA0)
 	{
@@ -115,7 +117,7 @@ void Bus::write(uint16_t addr, uint8_t val)
 	else if (addr < 0xFF00)
 	{
 		std::cerr << "Write error: Unusable area: " << std::hex << addr << std::dec << "\n";
-		exit(1);
+		// exit(1);
 	}
 	else if (addr < 0xFF80)
 	{

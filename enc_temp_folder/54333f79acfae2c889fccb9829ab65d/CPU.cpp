@@ -944,6 +944,8 @@ void CPU::procJR()
 
     if (checkCond(currentInstruction.condition))
     {
+        std::cout << checkCond(currentInstruction.condition) << " " << static_cast<int>(currentInstruction.condition) << " "
+        << (!((reg.F & 0x80) >> 7));
         reg.PC += signed8;
     }
 }

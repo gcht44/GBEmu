@@ -4,8 +4,10 @@ void Emu::run(bool d) {
 	bool firstStep = true;
 	debug = d;
 	std::string cmd;
+	int i = 1; // A supr
 
 	while (cpu.isRunning()) {
+		std::cout << "Step " << static_cast<int>(i++) << ": ";
 		if (debug) {
 			if (firstStep) { firstStep = false; }
 			else
