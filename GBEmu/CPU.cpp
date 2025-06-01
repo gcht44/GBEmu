@@ -404,22 +404,26 @@ void CPU::setFlags(char z, char n, char h, char c)
 {
     if (z != -1)
     {
-		reg.F = (reg.F & 0x7F) | (z << 7); // Set Z flag
+		reg.F = (reg.F & ~(1 << 7)) | (z << 7); // Set Z flag
+		// std::cout << "Z flag set to: " << static_cast<int>(reg.F) << "\n";
     }
 
     if (n != -1)
     {
-		reg.F = (reg.F & 0xBF) | (n << 6); // Set N flag
+		reg.F = (reg.F & ~(1 << 6)) | (n << 6); // Set N flag
+        // std::cout << "n flag set to: " << static_cast<int>(reg.F) << "\n";
     }
 
     if (h != -1)
     {
-		reg.F = (reg.F & 0xEF) | (h << 5); // Set H flag
+		reg.F = (reg.F & ~(1 << 5)) | (h << 5); // Set H flag
+		// std::cout << "H flag set to: " << static_cast<int>(reg.F) << "\n";
     }
 
     if (c != -1)
     {
-		reg.F = (reg.F & 0xF7) | (c << 4); // Set C flag
+		reg.F = (reg.F & ~(1 << 4)) | (c << 4); // Set C flag
+        // std::cout << "C flag set to: " << static_cast<int>(reg.F) << "\n";
     }
 }
 
@@ -879,8 +883,10 @@ void CPU::procINC(Bus& bus)
         uint8_t value = readRegister(currentInstruction.RT1) + 1;
         writeRegister(currentInstruction.RT1, value & 0xFF);
 
-        bool zFlag = (value == 0);
-        bool hFlag = ((value & 0xFF) > 0xF);
+        bool zFlag = value == 0;
+        bool hFlag = (value & 0x0F) == 0;
+
+		// std::cout << zFlag << "" << hFlag << "\n";
 
         setFlags(zFlag, 0, hFlag, -1);
     }

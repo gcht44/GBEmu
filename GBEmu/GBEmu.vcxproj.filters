@@ -67,9 +67,6 @@
     <None Include="Pokemon_Rouge.gb">
       <Filter>Fichiers sources</Filter>
     </None>
-    <None Include="game.gb">
-      <Filter>Fichiers sources</Filter>
-    </None>
     <None Include="06.gb">
       <Filter>Fichiers sources</Filter>
     </None>
