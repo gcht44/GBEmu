@@ -13,7 +13,7 @@ Status development:
     - AND -> Test
 */
 
-CPU::CPU() : stack(), dbg()
+CPU::CPU() : stack()
 {
     // reg = { 0 };
     // for gameboy doctor
@@ -31,6 +31,8 @@ CPU::CPU() : stack(), dbg()
 	halted = false;
 	running = true;
 	destIsMem = false;
+
+    msglgth = 0;
 
     OpcodeTable = {
         // 0x00 - 0x0F
@@ -468,8 +470,8 @@ void CPU::executeOpcode(uint8_t opcode, Bus& bus)
         << " SP: " << std::hex << static_cast<int>(reg.SP)
         << "\n";
 
-    dbg.update(bus);
-    dbg.print();
+    dbgUpdate(bus);
+    dbgPrint();
 
     switch (currentInstruction.IN)
     {
@@ -556,9 +558,16 @@ void CPU::executeOpcode(uint8_t opcode, Bus& bus)
 		break;
 	case IN_LDH:
 		procLDH(bus);
+        break;
     case IN_JR:
         procJR();
 		break;
+    case IN_DI:
+        procDI();
+		break;
+    case IN_EI:
+		procEI();
+        break;
     default:
         std::cerr << "Invalid OPCODE read: " << static_cast<int>(currentInstruction.IN) << "\n";
         exit(1);
@@ -642,6 +651,12 @@ void CPU::fetchData(Bus& bus)
     case AM_D8:
         fetchDataVal = bus.read(reg.PC++);
 		break;
+    case AM_A16_R:
+        lo = bus.read(reg.PC++);
+        hi = bus.read(reg.PC++);
+        destMem = (hi << 8) | lo;
+		destIsMem = true;
+        break;
 	default:
 		std::cerr << "Unsupported addressing mode: " << static_cast<int>(currentInstruction.AM) << "\n";
 		exit(1);
@@ -1126,7 +1141,39 @@ void CPU::procLDH(Bus& bus)
     if (destIsMem)
     {
 		bus.write(destMem, fetchDataVal);
-        return;
+        std::cout << "PC IN LDH " << reg.PC << "\n";
     }
-	reg.A = fetchDataVal;
+    else
+    {
+        reg.A = fetchDataVal;
+    }
+}
+
+void CPU::procDI()
+{
+	reg.IME = false;
+}
+
+void CPU::procEI()
+{
+	reg.IME = true;
+}
+
+void CPU::dbgUpdate(Bus& bus)
+{
+    if (bus.read(0xFF02) == 0x81)
+    { // Check if serial data is ready
+        char c = bus.read(0xFF01); // Read serial data
+
+        msg[msglgth++] = c;
+        bus.write(0xFF02, 0); // Clear the serial control register
+    }
+}
+
+void CPU::dbgPrint()
+{
+    if (msg[0])
+    {
+        std::cout << "DBG: " << msg;
+    }
 }

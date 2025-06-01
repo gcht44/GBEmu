@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClCompile Include="Bus.cpp" />
     <ClCompile Include="CPU.cpp" />
-    <ClCompile Include="DBG.cpp" />
     <ClCompile Include="Emu.cpp" />
     <ClCompile Include="GBRomReader.cpp" />
     <ClCompile Include="IO.cpp" />
@@ -31,7 +30,6 @@
   <ItemGroup>
     <ClInclude Include="Bus.hpp" />
     <ClInclude Include="CPU.hpp" />
-    <ClInclude Include="DBG.hpp" />
     <ClInclude Include="Emu.hpp" />
     <ClInclude Include="GBRomReader.hpp" />
     <ClInclude Include="IO.hpp" />

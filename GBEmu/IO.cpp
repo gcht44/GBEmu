@@ -12,7 +12,7 @@ uint8_t IO::readIO(uint16_t addr)
 				return serialData[1];
 			default:
 				std::cerr << "Read error: Invalid I/O address: " << std::hex << addr << std::dec << "\n";
-				exit(1);
+				// exit(1);
 				break;
 		}
 	}
@@ -27,7 +27,7 @@ void IO::writeIO(uint16_t addr, uint8_t val)
 		serialData[1] = val;
 	default:
 		std::cerr << "Write error: Invalid I/O address: " << std::hex << addr << std::dec << "\n";
-		exit(1);
+		// exit(1);
 		break;
 	}
 }

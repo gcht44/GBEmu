@@ -5,7 +5,6 @@
 #include <map>
 #include "Bus.hpp"
 // #include "Stack.hpp"
-#include "DBG.hpp"
 #include <fstream>
 #include <iomanip>
 #include <sstream>
@@ -157,7 +156,6 @@ public:
 	void executeOpcode(uint8_t opcode, Bus& bus);
 private:
 	Stack* stack;
-	DBG dbg;
 
 	Register reg;
 	OpcodeInfo currentInstruction;
@@ -203,6 +201,13 @@ private:
 	void procCPL();
 	void procRLA();
 	void procLDH(Bus& bus);
+	void procDI();
+	void procEI();
+
+	void dbgUpdate(Bus& bus);
+	void dbgPrint();
+	int msglgth;
+	char msg[1024];
 };
 
 #endif
