@@ -628,6 +628,8 @@ void CPU::fetchData(Bus& bus)
 	case AM_R_A8:
 		addr = bus.read(reg.PC++) | 0xFF00;
 		fetchDataVal = bus.read(addr);
+	    std::cout << "A8: " << std::hex << addr << "\n";
+		std::cout << "fetchDataVal: " << std::hex << fetchDataVal << "\n";
 		break;
 	case AM_A8_R:
         destMem = bus.read(reg.PC++);
@@ -657,6 +659,10 @@ void CPU::fetchData(Bus& bus)
         hi = bus.read(reg.PC++);
         destMem = (hi << 8) | lo;
 		destIsMem = true;
+        break;
+    case AM_R_A16:
+		fetchDataVal = bus.read16(reg.PC);
+		reg.PC += 2;
         break;
 	default:
 		std::cerr << "Unsupported addressing mode: " << static_cast<int>(currentInstruction.AM) << "\n";
@@ -1036,7 +1042,6 @@ void CPU::procCALL(Bus& bus)
     if (checkCond(currentInstruction.condition))
     {
         stack->push16(reg.PC, reg, bus);
-		std::cout << "PUSH PC: " << std::hex << reg.PC << "\n";
 		reg.PC = fetchDataVal;
         return;
     }

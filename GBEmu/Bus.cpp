@@ -3,6 +3,12 @@
 
 uint8_t Bus::read(uint16_t addr)
 {
+	/*if (addr == 0xFF44)
+	{
+		std::cout << "0xFF44 acces";
+		exit(1);
+	}*/
+
 	if (addr < 0x4000)
 	{
 		// ROM bank 0
@@ -75,6 +81,12 @@ uint8_t Bus::read(uint16_t addr)
 
 void Bus::write(uint16_t addr, uint8_t val)
 {
+	if (addr == 0xFF44)
+	{
+		std::cout << std::hex << val;
+		exit(1);
+	}
+
 	if (addr < 0x4000)
 	{
 		// ROM bank 0
