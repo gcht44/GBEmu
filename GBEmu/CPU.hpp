@@ -4,11 +4,13 @@
 #include <iostream>
 #include <map>
 #include "Bus.hpp"
-#include "Stack.hpp"
+// #include "Stack.hpp"
 #include "DBG.hpp"
 #include <fstream>
 #include <iomanip>
 #include <sstream>
+
+class Stack; // Forward declaration
 
 enum RegType
 {
@@ -124,8 +126,6 @@ struct OpcodeInfo
 	CT condition;
 };
 
-std::map<uint8_t, OpcodeInfo> OpcodeTable;
-
 struct Register
 {
 	uint8_t A;
@@ -145,7 +145,8 @@ struct Register
 
 class CPU {
 public:
-	CPU() : stack(), dbg() {};
+	CPU();
+	~CPU() { delete stack; }  
 	bool isHalted() const { return halted; }
 	bool isRunning() const { return running; }
 
@@ -155,7 +156,7 @@ public:
 	void setFlags(char z, char n, char h, char c);
 	void executeOpcode(uint8_t opcode, Bus& bus);
 private:
-	Stack stack;
+	Stack* stack;
 	DBG dbg;
 
 	Register reg;
@@ -166,6 +167,8 @@ private:
 
 	bool halted;
 	bool running;
+
+	std::map<uint8_t, OpcodeInfo> OpcodeTable;
 
 	OpcodeInfo OpcodeToInstruction(uint8_t opcode) const;
 	void fetchData(Bus& bus);

@@ -1,7 +1,9 @@
-#include "dbg.hpp"
+#include "DBG.hpp"
 
-void DBG::update(Bus& bus) {
-	if (bus.read(0xFF02) == 0x81) { // Check if serial data is ready
+void DBG::update(Bus& bus) 
+{
+	if (bus.read(0xFF02) == 0x81) 
+	{ // Check if serial data is ready
 		char c = bus.read(0xFF01); // Read serial data
 
 		msg[msglgth++] = c;
@@ -9,7 +11,8 @@ void DBG::update(Bus& bus) {
 	}
 
 }
-void DBG::print() {
+void DBG::print() 
+{
 	if (msg[0])
 	{
 		std::cout << "DBG: " << msg;

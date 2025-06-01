@@ -9,7 +9,7 @@ public:
 	uint8_t readIO(uint16_t addr);
 	void writeIO(uint16_t addr, uint8_t val);
 private:
-	static char serialData[2];
+	char serialData[2];
 };
 
 #endif

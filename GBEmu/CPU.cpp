@@ -1,4 +1,5 @@
 #include "CPU.hpp"
+#include "Stack.hpp"
 
 /*
 Status development:
@@ -12,7 +13,7 @@ Status development:
     - AND -> Test
 */
 
-CPU::CPU()
+CPU::CPU() : stack(), dbg()
 {
     reg = { 0 };
     reg.PC = 0x100;
@@ -312,7 +313,7 @@ CPU::CPU()
 
 }
 
-CPU::OpcodeInfo CPU::OpcodeToInstruction(uint8_t opcode) const
+OpcodeInfo CPU::OpcodeToInstruction(uint8_t opcode) const
 {
     auto it = this->OpcodeTable.find(opcode);
     if (it != this->OpcodeTable.end()) {
@@ -631,145 +632,145 @@ std::string CPU::getInstructionName(Instruction instr) const
 {
     switch (instr)
     {   
-    case CPU::IN_NONE:
+    case IN_NONE:
         return "IN_NONE";
         break;
-    case CPU::IN_NOP:
+    case IN_NOP:
         return "IN_NOP";
         break;
-    case CPU::IN_LD:
+    case IN_LD:
 		return "IN_LD";
         break;
-    case CPU::IN_INC:
+    case IN_INC:
 		return "IN_INC";
         break;
-    case CPU::IN_DEC:
+    case IN_DEC:
 		return "IN_DEC";
         break;
-    case CPU::IN_RLCA:
+    case IN_RLCA:
 		return "IN_RLCA";
         break;
-    case CPU::IN_ADD:
+    case IN_ADD:
 		return "IN_ADD";
         break;
-    case CPU::IN_RRCA:
+    case IN_RRCA:
 		return "IN_RRCA";
         break;
-    case CPU::IN_STOP:
+    case IN_STOP:
 		return "IN_STOP";
         break;
-    case CPU::IN_RLA:
+    case IN_RLA:
 		return "IN_RLA";
         break;
-    case CPU::IN_JR:
+    case IN_JR:
 		return "IN_JR";
         break;
-    case CPU::IN_RRA:
+    case IN_RRA:
 		return "IN_RRA";
         break;
-    case CPU::IN_DAA:
+    case IN_DAA:
 		return "IN_DAA";
         break;
-    case CPU::IN_CPL:
+    case IN_CPL:
 		return "IN_CPL";
         break;
-    case CPU::IN_SCF:
+    case IN_SCF:
 		return "IN_SCF";
         break;
-    case CPU::IN_CCF:
+    case IN_CCF:
 		return "IN_CCF";
         break;
-    case CPU::IN_HALT:
+    case IN_HALT:
 		return "IN_HALT";
         break;
-    case CPU::IN_ADC:
+    case IN_ADC:
 		return "IN_ADC";
         break;
-    case CPU::IN_SUB:
+    case IN_SUB:
 		return "IN_SUB";
         break;
-    case CPU::IN_SBC:
+    case IN_SBC:
 		return "IN_SBC";
         break;
-    case CPU::IN_AND:
+    case IN_AND:
 		return "IN_AND";
         break;
-    case CPU::IN_XOR:
+    case IN_XOR:
 		return "IN_XOR";
         break;
-    case CPU::IN_OR:
+    case IN_OR:
 		return "IN_OR";
         break;
-    case CPU::IN_CP:
+    case IN_CP:
 		return "IN_CP";
         break;
-    case CPU::IN_POP:
+    case IN_POP:
 		return "IN_POP";
         break;
-    case CPU::IN_JP:
+    case IN_JP:
 		return "IN_JP";
         break;
-    case CPU::IN_PUSH:
+    case IN_PUSH:
 		return "IN_PUSH";
         break;
-    case CPU::IN_RET:
+    case IN_RET:
 		return "IN_RET";
         break;
-    case CPU::IN_CB:
+    case IN_CB:
 		return "IN_CB";
         break;
-    case CPU::IN_CALL:
+    case IN_CALL:
 		return "IN_CALL";
         break;
-    case CPU::IN_RETI:
+    case IN_RETI:
 		return "IN_RETI";
         break;
-    case CPU::IN_LDH:
+    case IN_LDH:
 		return "IN_LDH";
         break;
-    case CPU::IN_DI:
+    case IN_DI:
 		return "IN_DI";
         break;
-    case CPU::IN_EI:
+    case IN_EI:
 		return "IN_EI";
         break;
-    case CPU::IN_RST:
+    case IN_RST:
 		return "IN_RST";
         break;
-    case CPU::IN_ERR:
+    case IN_ERR:
 		return "IN_ERR";
         break;
-    case CPU::IN_RLC:
+    case IN_RLC:
 		return "IN_RLC";
         break;
-    case CPU::IN_RRC:
+    case IN_RRC:
 		return "IN_RRC";
         break;
-    case CPU::IN_RL:
+    case IN_RL:
 		return "IN_RL";
         break;
-    case CPU::IN_RR:
+    case IN_RR:
 		return "IN_RR";
         break;
-    case CPU::IN_SLA:
+    case IN_SLA:
 		return "IN_SLA";
         break;
-    case CPU::IN_SRA:
+    case IN_SRA:
 		return "IN_SRA";
         break;
-    case CPU::IN_SWAP:
+    case IN_SWAP:
 		return "IN_SWAP";
         break;
-    case CPU::IN_SRL:
+    case IN_SRL:
 		return "IN_SRL";
         break;
-    case CPU::IN_BIT:
+    case IN_BIT:
 		return "IN_BIT";
         break;
-    case CPU::IN_RES:
+    case IN_RES:
 		return "IN_RES";
         break;
-    case CPU::IN_SET:
+    case IN_SET:
 		return "IN_SET";
         break;
     default:
@@ -993,38 +994,38 @@ void CPU::procSBC()
 
 void CPU::procPOP(Bus& bus)
 {
-	writeRegister(currentInstruction.RT1 ,stack.pop16(reg, bus));
+	writeRegister(currentInstruction.RT1 ,stack->pop16(reg, bus));
 }
 void CPU::procPUSH(Bus& bus)
 {
-	stack.push16(readRegister(currentInstruction.RT1), reg, bus);
+    stack->push16(readRegister(currentInstruction.RT1), reg, bus);
 }
 
 void CPU::procCALL(Bus& bus)
 {
     if ((currentInstruction.condition == CT_C) && checkCond(currentInstruction.condition))
     {
-        stack.push16(reg.PC, reg, bus);
+        stack->push16(reg.PC, reg, bus);
 		reg.PC = fetchDataVal;
     }
     else if ((currentInstruction.condition == CT_NC) && checkCond(currentInstruction.condition))
     {
-        stack.push16(reg.PC, reg, bus);
+        stack->push16(reg.PC, reg, bus);
         reg.PC = fetchDataVal;
     }
     else if ((currentInstruction.condition == CT_Z) && checkCond(currentInstruction.condition))
     {
-        stack.push16(reg.PC, reg, bus);
+        stack->push16(reg.PC, reg, bus);
         reg.PC = fetchDataVal;
     }
     else if ((currentInstruction.condition == CT_NZ) && checkCond(currentInstruction.condition))
     {
-        stack.push16(reg.PC, reg, bus);
+        stack->push16(reg.PC, reg, bus);
         reg.PC = fetchDataVal;
     }
     else
     {
-        stack.push16(reg.PC, reg, bus);
+        stack->push16(reg.PC, reg, bus);
         reg.PC = fetchDataVal;
     }
 }
@@ -1032,29 +1033,29 @@ void CPU::procRET(Bus& bus)
 {
     if ((currentInstruction.condition == CT_C) && checkCond(currentInstruction.condition))
     {
-        reg.PC = stack.pop16(reg, bus);
+        reg.PC = stack->pop16(reg, bus);
     }
     else if ((currentInstruction.condition == CT_NC) && checkCond(currentInstruction.condition))
     {
-        reg.PC = stack.pop16(reg, bus);
+        reg.PC = stack->pop16(reg, bus);
     }
     else if ((currentInstruction.condition == CT_Z) && checkCond(currentInstruction.condition))
     {
-        reg.PC = stack.pop16(reg, bus);
+        reg.PC = stack->pop16(reg, bus);
     }
     else if ((currentInstruction.condition == CT_NZ) && checkCond(currentInstruction.condition))
     {
-        reg.PC = stack.pop16(reg, bus);
+        reg.PC = stack->pop16(reg, bus);
     }
     else
     {
-        reg.PC = stack.pop16(reg, bus);
+        reg.PC = stack->pop16(reg, bus);
     }
 }
 
 void CPU::procRST(Bus& bus)
 {
-	stack.push16(reg.PC, reg, bus);
+    stack->push16(reg.PC, reg, bus);
 	uint8_t n = (bus.read(reg.PC - 1) & 0x38);
     reg.PC = n;
 }

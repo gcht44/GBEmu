@@ -24,7 +24,7 @@ void Emu::run(bool d) {
 		if (cpu.isHalted()) {
 			continue;
 		}
-		uint8_t opcode = bus.read(cpu.readRegister(CPU::RT_PC));
+		uint8_t opcode = bus.read(cpu.readRegister(RT_PC));
 		cpu.executeOpcode(opcode, bus);
 	}
 }

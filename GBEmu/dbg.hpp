@@ -6,12 +6,12 @@
 
 class DBG {
 public:
-	DBG() { msglgth = 0; msg[1024] = {0}; };
+	DBG() { msglgth = 0; };
 	void update(Bus& bus);
 	void print();
 private:
 	int msglgth;
-	static char msg[1024];
+	char msg[1024];
 };
 
 #endif
