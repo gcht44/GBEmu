@@ -18,7 +18,7 @@ int main() {
     GBRomReader reader;
 
     try {
-        reader.load("game.gb");
+        reader.load("06.gb");
         const auto& header = reader.getHeader();
         auto opcodes = reader.getOpcodes();
 
@@ -28,7 +28,7 @@ int main() {
             << "Nombre d'opcodes: " << std::dec << opcodes.size() << "\n\n";
 
         Emu emu(reader.getOpcodes());
-		emu.run(true); // Démarre l'émulateur en mode debug
+		emu.run(); // Démarre l'émulateur en mode debug
 
     }
     catch (const std::exception& e) {

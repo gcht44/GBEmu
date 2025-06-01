@@ -70,5 +70,8 @@
     <None Include="game.gb">
       <Filter>Fichiers sources</Filter>
     </None>
+    <None Include="06.gb">
+      <Filter>Fichiers sources</Filter>
+    </None>
   </ItemGroup>
 </Project>

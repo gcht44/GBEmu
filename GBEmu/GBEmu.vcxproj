@@ -38,6 +38,7 @@
     <ClInclude Include="Stack.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="06.gb" />
     <None Include="game.gb" />
     <None Include="Pokemon_Rouge.gb" />
   </ItemGroup>

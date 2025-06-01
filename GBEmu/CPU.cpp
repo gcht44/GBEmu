@@ -15,7 +15,18 @@ Status development:
 
 CPU::CPU() : stack(), dbg()
 {
-    reg = { 0 };
+    // reg = { 0 };
+    // for gameboy doctor
+	reg.A = 0x01; 
+	reg.F = 0xB0; 
+	reg.B = 0x00;
+	reg.C = 0x13;
+	reg.D = 0x00;
+	reg.E = 0xD8;
+	reg.H = 0x01;
+	reg.L = 0x4D;
+	reg.SP = 0xFFFE;
+
     reg.PC = 0x100;
 	halted = false;
 	running = true;
@@ -363,20 +374,21 @@ void CPU::writeRegister(RegType RT, uint16_t val)
     case RT_L: reg.L = val; break;
 
     case RT_AF:
-        reg.A = val >> 4;
+        reg.A = val >> 8;
         reg.F = val & 0xFF;
         break;
     case RT_BC:
-        reg.B = val >> 4;
+        reg.B = val >> 8;
         reg.C = val & 0xFF;
         break;
     case RT_DE:
-        reg.D = val >> 4;
+        reg.D = val >> 8;
         reg.E = val & 0xFF;
         break;
     case RT_HL:
-        reg.H = val >> 4;
+        reg.H = val >> 8;
         reg.L = val & 0xFF;
+		// printf("H: %02X L: %02X\n", (val >> 4) & 0xff, val & 0xFF);
         break;
     case RT_SP: reg.SP = val; break;
     case RT_PC: reg.PC = val; break;
@@ -414,24 +426,25 @@ void CPU::setFlags(char z, char n, char h, char c)
 void CPU::executeOpcode(uint8_t opcode, Bus& bus)
 {
     std::ostringstream oss;
-    oss << std::uppercase << std::setfill('0');
-    oss << "A:" << std::setw(2) << std::hex << reg.A << " ";
-    oss << "F:" << std::setw(2) << reg.F << " ";
-    oss << "B:" << std::setw(2) << reg.B << " ";
-    oss << "C:" << std::setw(2) << reg.C << " ";
-    oss << "D:" << std::setw(2) << reg.D << " ";
-    oss << "E:" << std::setw(2) << reg.E << " ";
-    oss << "H:" << std::setw(2) << reg.H << " ";
-    oss << "L:" << std::setw(2) << reg.L << "  ";
+    oss << std::uppercase << std::setfill('0') << std::hex;
+    oss << "A:" << std::setw(2) << static_cast<unsigned int>(reg.A) << " ";
+    oss << "F:" << std::setw(2) << static_cast<unsigned int>(reg.F) << " ";
+    oss << "B:" << std::setw(2) << static_cast<unsigned int>(reg.B) << " ";
+    oss << "C:" << std::setw(2) << static_cast<unsigned int>(reg.C) << " ";
+    oss << "D:" << std::setw(2) << static_cast<unsigned int>(reg.D) << " ";
+    oss << "E:" << std::setw(2) << static_cast<unsigned int>(reg.E) << " ";
+    oss << "H:" << std::setw(2) << static_cast<unsigned int>(reg.H) << " ";
+    oss << "L:" << std::setw(2) << static_cast<unsigned int>(reg.L) << " ";
     oss << "SP:" << std::setw(4) << reg.SP << " ";
-    oss << "PC:" << std::setw(4) << reg.PC;
-
-    std::ofstream file("etat_cpu.txt");
-    if (file.is_open()) 
+    oss << "PC:" << std::setw(4) << reg.PC << " ";
+    oss << "PCMEM:" << std::setw(2) << static_cast<unsigned int>(bus.read(reg.PC)) << "," << std::setw(2) << static_cast<unsigned int>(bus.read(reg.PC + 1)) <<  "," << std::setw(2) << static_cast<unsigned int>(bus.read(reg.PC + 2)) << "," << std::setw(2) << static_cast<unsigned int>(bus.read(reg.PC + 3));
+	oss << "\n";
+    std::ofstream file("etat_cpu.txt", std::ios::app);
+    if (file.is_open())
     {
         file << oss.str();
         file.close();
-	}
+    }
 
     uint16_t pc = reg.PC;
 	destIsMem = false;
@@ -619,6 +632,9 @@ void CPU::fetchData(Bus& bus)
 	case AM_MR:
 		destMem = readRegister(currentInstruction.RT1);
 		destIsMem = true;
+		break;
+    case AM_D8:
+        fetchDataVal = bus.read(reg.PC++);
 		break;
 	default:
 		std::cerr << "Unsupported addressing mode: " << static_cast<int>(currentInstruction.AM) << "\n";
