@@ -955,17 +955,18 @@ void CPU::procADD(Bus& bus)
     {
 	    uint32_t value = readRegister(currentInstruction.RT1) + fetchDataVal;
 	    writeRegister(currentInstruction.RT1, value & 0xFFFF);
-	    bool hFlag = ((readRegister(currentInstruction.RT1) & 0xFF) + (fetchDataVal & 0xFF)) > 0xF;
+	    bool hFlag = ((readRegister(currentInstruction.RT1) & 0xFF) + (fetchDataVal & 0xFF)) > 0x0F;
 	    bool cFlag = value > 0xFFFF;
 	    setFlags(-1, 0, hFlag, cFlag);
         return;
     }
-    uint16_t value = readRegister(currentInstruction.RT1) + fetchDataVal;
-    writeRegister(currentInstruction.RT1, value & 0xFFFF);
-    bool hFlag = ((readRegister(currentInstruction.RT1) & 0xFF) + (fetchDataVal & 0xFF)) > 0xF;
-    bool cFlag = value > 0xFFFF;
-	bool zFlag = value == 0;
+    uint32_t value = readRegister(currentInstruction.RT1) + fetchDataVal;
+    bool hFlag = ((readRegister(currentInstruction.RT1) & 0xF) + (fetchDataVal & 0xF)) > 0x0F;
+    bool cFlag = value > 0xFF;
+	bool zFlag = (value & 0xFF) == 0;
+
     setFlags(zFlag, 0, hFlag, cFlag);
+    writeRegister(currentInstruction.RT1, value & 0xFFFF);
 }
 
 void CPU::procJR()
