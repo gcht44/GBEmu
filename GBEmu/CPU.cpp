@@ -616,13 +616,13 @@ void CPU::fetchData(Bus& bus)
 
 	case AM_HLI_R:
         fetchDataVal = readRegister(currentInstruction.RT2);
-        destMem = readRegister(currentInstruction.RT1);
+        destMem = readRegister(RT_HL);
         destIsMem = true;
         writeRegister(RT_HL, readRegister(RT_HL) + 1);
 		break;
 	case AM_HLD_R:
         fetchDataVal = readRegister(currentInstruction.RT2);
-        destMem = readRegister(currentInstruction.RT1);
+        destMem = readRegister(RT_HL);
         destIsMem = true;
         writeRegister(RT_HL, readRegister(RT_HL) - 1);
 		break;
