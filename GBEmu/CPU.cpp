@@ -610,8 +610,6 @@ void CPU::fetchData(Bus& bus)
         {
             fetchDataVal = bus.read(readRegister(currentInstruction.RT2));
 		}
-
-		fetchDataVal = bus.read(currentInstruction.RT2);
 		break;
 
 	case AM_HLI_R:
