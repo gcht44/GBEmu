@@ -1020,21 +1020,21 @@ void CPU::procADC()
 
 void CPU::procSUB()
 {
-    uint16_t value = readRegister(currentInstruction.RT1) - fetchDataVal;
-    writeRegister(currentInstruction.RT1, value & 0xFFFF);
-    bool hFlag = (readRegister(currentInstruction.RT1) & 0xF) - (fetchDataVal & 0xF) < 0;
-    bool cFlag = (readRegister(currentInstruction.RT1) - fetchDataVal) < 0;
+    uint16_t value = readRegister(RT_A) - fetchDataVal;
+    bool hFlag = (readRegister(RT_A) & 0xF) - (fetchDataVal & 0xF) < 0;
+    bool cFlag = (readRegister(RT_A) - fetchDataVal) < 0;
     bool zFlag = value == 0;
     setFlags(zFlag, 1, hFlag, cFlag);
+    writeRegister(RT_A, value & 0xFFFF);
 }
 void CPU::procSBC()
 {
-    uint16_t value = readRegister(currentInstruction.RT1) - fetchDataVal - ((reg.F & 0x10) >> 4);
-    writeRegister(currentInstruction.RT1, value & 0xFFFF);
-    bool hFlag = (readRegister(currentInstruction.RT1) & 0xF) - (fetchDataVal & 0xF) < 0;
-    bool cFlag = (readRegister(currentInstruction.RT1) - fetchDataVal) < 0;
+    uint16_t value = readRegister(RT_A) - fetchDataVal - ((reg.F & 0x10) >> 4);
+    bool hFlag = (readRegister(RT_A) & 0xF) - (fetchDataVal & 0xF) < 0;
+    bool cFlag = (readRegister(RT_A) - fetchDataVal) < 0;
     bool zFlag = value == 0;
     setFlags(zFlag, 1, hFlag, cFlag);
+    writeRegister(RT_A, value & 0xFFFF);
 }
 
 void CPU::procPOP(Bus& bus)
