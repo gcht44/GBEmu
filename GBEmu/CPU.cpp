@@ -602,7 +602,16 @@ void CPU::fetchData(Bus& bus)
         }
 		break;
 	case AM_R_MR:
-		fetchDataVal = bus.read(reg.PC++);
+        if (currentInstruction.RT2 == RT_C) 
+        {
+            fetchDataVal = bus.read(readRegister(RT_C) | 0xFF00);
+        } 
+        else 
+        {
+            fetchDataVal = bus.read(readRegister(currentInstruction.RT2));
+		}
+
+		fetchDataVal = bus.read(currentInstruction.RT2);
 		break;
 
 	case AM_HLI_R:
@@ -655,13 +664,14 @@ void CPU::fetchData(Bus& bus)
         fetchDataVal = bus.read(reg.PC++);
 		break;
     case AM_A16_R:
-        lo = bus.read(reg.PC++);
-        hi = bus.read(reg.PC++);
-        destMem = (hi << 8) | lo;
+        destMem = bus.read16(reg.PC);
+		reg.PC += 2;
 		destIsMem = true;
+		fetchDataVal = readRegister(currentInstruction.RT2);
         break;
     case AM_R_A16:
 		fetchDataVal = bus.read16(reg.PC);
+		fetchDataVal = bus.read(fetchDataVal);
 		reg.PC += 2;
         break;
 	default:
@@ -834,7 +844,7 @@ void CPU::procLD(Bus& bus)
         {
 		    bus.write(destMem, fetchDataVal);
         }
-	}
+    }
     else if (currentInstruction.AM == AM_HL_SPR)
     {
         bool cFlag = (((readRegister(currentInstruction.RT2) & 0xFF) + fetchDataVal) > 0xFF);

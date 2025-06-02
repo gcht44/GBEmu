@@ -3,12 +3,6 @@
 
 uint8_t Bus::read(uint16_t addr)
 {
-	/*if (addr == 0xFF44)
-	{
-		std::cout << "0xFF44 acces";
-		exit(1);
-	}*/
-
 	if (addr < 0x4000)
 	{
 		// ROM bank 0
@@ -81,12 +75,6 @@ uint8_t Bus::read(uint16_t addr)
 
 void Bus::write(uint16_t addr, uint8_t val)
 {
-	if (addr == 0xFF44)
-	{
-		std::cout << std::hex << val;
-		exit(1);
-	}
-
 	if (addr < 0x4000)
 	{
 		// ROM bank 0
@@ -165,6 +153,11 @@ void Bus::write16(uint16_t address, uint16_t value) {
 void Bus::writeRAM(uint16_t addr, uint8_t val)
 {
 	addr -= 0xC000;
+
+	if (addr >= 0x2000) {
+		std::cout << "INVALID RAM ADDR\n";
+		exit(-1);
+	}
 
 	RAM[addr] = val;
 }
