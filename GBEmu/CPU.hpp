@@ -179,13 +179,13 @@ private:
 	void procDEC(Bus& bus);
 	void procADD(Bus& bus);
 	void procJR();
-	void procAND();
-	void procOR();
-	void procXOR();
-	void procCP();
-	void procADC();
-	void procSUB();
-	void procSBC();
+	void procAND(Bus& bus);
+	void procOR(Bus& bus);
+	void procXOR(Bus& bus);
+	void procCP(Bus& bus);
+	void procADC(Bus& bus);
+	void procSUB(Bus& bus);
+	void procSBC(Bus& bus);
 	void procPOP(Bus& bus);
 	void procPUSH(Bus& bus);
 	void procCALL(Bus& bus);
@@ -203,6 +203,9 @@ private:
 	void procLDH(Bus& bus);
 	void procDI();
 	void procEI();
+	void procCB(Bus& bus);
+
+	RegType getRegType(uint8_t regCode) const;
 
 	void dbgUpdate(Bus& bus);
 	void dbgPrint();

@@ -485,28 +485,28 @@ void CPU::executeOpcode(uint8_t opcode, Bus& bus)
 		procJP();
 		break;
 	case IN_ADC:
-		procADC();
+		procADC(bus);
 		break;
 	case IN_ADD:
 		procADD(bus);
 		break;
 	case IN_SUB:
-		procSUB();
+		procSUB(bus);
 		break;
 	case IN_SBC:
-		procSBC();
+		procSBC(bus);
 		break;
 	case IN_AND:
-		procAND();
+		procAND(bus);
 		break;
 	case IN_XOR:
-		procXOR();
+		procXOR(bus);
 		break;
 	case IN_OR:
-		procOR();
+		procOR(bus);
 		break;
 	case IN_CP:
-		procCP();
+		procCP(bus);
 		break;
 	case IN_INC:
 		procINC(bus);
@@ -979,28 +979,48 @@ void CPU::procJR()
     }
 }
 
-void CPU::procAND()
+void CPU::procAND(Bus& bus)
 {
+    if (currentInstruction.AM == AM_MR)
+    {
+        fetchDataVal = bus.read(destMem);
+    }
+
 	reg.A &= fetchDataVal;
 	bool zFlag = (reg.A == 0);
 	setFlags(zFlag, 0, 1, 0);
 }
-void CPU::procOR()
+void CPU::procOR(Bus& bus)
 {
+    if (currentInstruction.AM == AM_MR)
+    {
+        fetchDataVal = bus.read(destMem);
+    }
+
     reg.A |= fetchDataVal;
     bool zFlag = (reg.A == 0);
     setFlags(zFlag, 0, 0, 0);
 }
 
-void CPU::procXOR()
+void CPU::procXOR(Bus& bus)
 {
+    if (currentInstruction.AM == AM_MR)
+    {
+        fetchDataVal = bus.read(destMem);
+    }
+
     reg.A ^= fetchDataVal;
     bool zFlag = (reg.A == 0);
     setFlags(zFlag, 0, 0, 0);
 }
 
-void CPU::procCP()
+void CPU::procCP(Bus& bus)
 {
+    if (currentInstruction.AM == AM_MR)
+    {
+        fetchDataVal = bus.read(destMem);
+    }
+
 	uint8_t value = reg.A - fetchDataVal;
 	bool zFlag = (value == 0);
 	bool hFlag = ((reg.A & 0xF) < (fetchDataVal & 0xF));
@@ -1008,8 +1028,13 @@ void CPU::procCP()
 	setFlags(zFlag, 1, hFlag, cFlag);
 }
 
-void CPU::procADC()
+void CPU::procADC(Bus& bus)
 {
+    if (currentInstruction.AM == AM_MR)
+    {
+        fetchDataVal = bus.read(destMem);
+    }
+
     uint16_t res = reg.A + fetchDataVal + ((reg.F & 0x10) >> 4); // Add A, fetchDataVal and carry if set
 	reg.A = res & 0xFF; // Store result in A
     bool zFlag = (res == 0);
@@ -1018,8 +1043,13 @@ void CPU::procADC()
     setFlags(zFlag, 0, hFlag, cFlag);
 }
 
-void CPU::procSUB()
+void CPU::procSUB(Bus& bus)
 {
+    if (currentInstruction.AM == AM_MR)
+    {
+        fetchDataVal = bus.read(destMem);
+    }
+
     uint16_t value = readRegister(RT_A) - fetchDataVal;
     bool hFlag = (readRegister(RT_A) & 0xF) - (fetchDataVal & 0xF) < 0;
     bool cFlag = (readRegister(RT_A) - fetchDataVal) < 0;
@@ -1027,7 +1057,7 @@ void CPU::procSUB()
     setFlags(zFlag, 1, hFlag, cFlag);
     writeRegister(RT_A, value & 0xFFFF);
 }
-void CPU::procSBC()
+void CPU::procSBC(Bus& bus)
 {
     uint16_t value = readRegister(RT_A) - fetchDataVal - ((reg.F & 0x10) >> 4);
     bool hFlag = (readRegister(RT_A) & 0xF) - (fetchDataVal & 0xF) < 0;
@@ -1191,5 +1221,50 @@ void CPU::dbgPrint()
     if (msg[0])
     {
         std::cout << "DBG: " << msg;
+    }
+}
+
+RegType CPU::getRegType(uint8_t regCode) const
+{
+    switch (regCode)
+    {
+    case 0: return RT_B;
+    case 1: return RT_C;
+    case 2: return RT_D;
+    case 3: return RT_E;
+    case 4: return RT_H;
+    case 5: return RT_L;
+    case 6: return RT_HL; // Memory read
+    case 7: return RT_A;
+    default:
+        std::cerr << "Invalid register code: " << static_cast<int>(regCode) << "\n";
+        exit(1);
+	}
+}
+
+void CPU::procCB(Bus& bus)
+{
+	RegType operand = getRegType(fetchDataVal & 0x07);
+	uint8_t bitIndex = (fetchDataVal >> 3) & 0x07;
+	uint8_t brs = (fetchDataVal & 0xC0) >> 6;
+	uint8_t ssss = (fetchDataVal & 0x38) >> 3;
+    uint8_t rrrr = (fetchDataVal & 0x18) >> 3;
+
+    switch (brs)
+    {
+        case 1: // BIT
+			uint8_t mask = 1 << bitIndex;
+            if (operand == RT_HL) // Memory read
+            {
+                uint8_t value = bus.read(readRegister(RT_HL));
+                bool bitSet = (value & mask) == 0;
+                setFlags(bitSet, 0, 1, -1);
+            }
+            else // Register read
+            {
+                uint8_t value = readRegister(operand);
+                bool bitSet = (value & mask) == 0;
+                setFlags(bitSet, 0, 1, -1); // Set Z, N, H flags
+            }
     }
 }
