@@ -1266,5 +1266,17 @@ void CPU::procCB(Bus& bus)
                 bool bitSet = (value & mask) == 0;
                 setFlags(bitSet, 0, 1, -1); // Set Z, N, H flags
             }
+		case 2: // RES
+            uint8_t mask = 1 << bitIndex;
+            if (operand == RT_HL)
+            {
+                uint8_t value = bus.read(readRegister(RT_HL));
+				bus.write(readRegister(RT_HL), value ^ mask); // Clear the bit
+            }
+            else
+            {
+                writeRegister(operand, (readRegister(operand) ^ mask));
+            }
+            return;
     }
 }
