@@ -568,6 +568,9 @@ void CPU::executeOpcode(uint8_t opcode, Bus& bus)
     case IN_EI:
 		procEI();
         break;
+    case IN_CB:
+        procCB(bus);
+        break;
     default:
         std::cerr << "Invalid OPCODE read: " << static_cast<int>(currentInstruction.IN) << "\n";
         exit(1);
@@ -1250,10 +1253,13 @@ void CPU::procCB(Bus& bus)
 	uint8_t ssss = (fetchDataVal & 0x38) >> 3;
     uint8_t rrrr = (fetchDataVal & 0x18) >> 3;
 
+    uint8_t mask;
+    uint8_t oldRegVal;
+
     switch (brs)
     {
         case 1: // BIT
-			uint8_t mask = 1 << bitIndex;
+			mask = 1 << bitIndex;
             if (operand == RT_HL) // Memory read
             {
                 uint8_t value = bus.read(readRegister(RT_HL));
@@ -1266,8 +1272,9 @@ void CPU::procCB(Bus& bus)
                 bool bitSet = (value & mask) == 0;
                 setFlags(bitSet, 0, 1, -1); // Set Z, N, H flags
             }
+            return;
 		case 2: // RES
-            uint8_t mask = 1 << bitIndex;
+            mask = 1 << bitIndex;
             if (operand == RT_HL)
             {
                 uint8_t value = bus.read(readRegister(RT_HL));
@@ -1278,5 +1285,149 @@ void CPU::procCB(Bus& bus)
                 writeRegister(operand, (readRegister(operand) ^ mask));
             }
             return;
+        case 3: // SET
+            mask = 1 << bitIndex;
+            if (operand == RT_HL)
+            {
+                uint8_t value = bus.read(readRegister(RT_HL));
+                bus.write(readRegister(RT_HL), value | mask);
+            }
+            else
+            {
+                writeRegister(operand, (readRegister(operand) | mask));
+            }
+            return;
     }
+    switch (ssss)
+    {
+        case 4: // SLA
+            if (operand == RT_HL)
+            {
+                oldRegVal = bus.read(readRegister(operand));
+                bus.write(readRegister(operand), (bus.read(readRegister(operand) << 1)));
+            }
+            else
+            {
+                oldRegVal = readRegister(operand);
+                writeRegister(operand, (readRegister(operand) << 1));
+            }
+
+            setFlags(readRegister(operand) == 0, false, false, !!(oldRegVal & 0x80));
+            return;
+        case 5: // SRA
+            if (operand == RT_HL)
+            {
+                oldRegVal = bus.read(readRegister(operand));
+                bus.write(readRegister(operand), (bus.read(readRegister(operand) >> 1)));
+            }
+            else
+            {
+                oldRegVal = readRegister(operand);
+                writeRegister(operand, (readRegister(operand) >> 1));
+            }
+
+            setFlags(readRegister(operand) == 0, 0, 0, (oldRegVal & 0x01));
+            return;
+        case 6: // SWAP
+            if (operand == RT_HL)
+            {
+                oldRegVal = bus.read(readRegister(operand));
+                uint8_t res = (oldRegVal >> 4) | (oldRegVal << 4);
+                bus.write(readRegister(operand), res);
+                setFlags(res == 0, 0, 0, 0);
+            }
+            else
+            {
+                oldRegVal = readRegister(operand);
+                uint8_t res = (oldRegVal >> 4) | (oldRegVal << 4);
+                writeRegister(operand, res);
+                setFlags(res == 0, 0, 0, 0);
+            }
+            return;
+        case 7: // SRL
+            if (operand == RT_HL)
+            {
+                oldRegVal = bus.read(readRegister(operand));
+                uint8_t res = oldRegVal >> 1;
+                bus.write(readRegister(operand), res);
+                setFlags(res == 0, 0, 0, oldRegVal & 0x01);
+            }
+            else
+            {
+                oldRegVal = readRegister(operand);
+                uint8_t res = oldRegVal >> 1;
+                bus.write(readRegister(operand), res);
+                setFlags(res == 0, 0, 0, oldRegVal & 0x01);
+            }
+            return;
+    }
+
+    switch (rrrr)
+    {
+        case 0: // RLC
+            if (operand == RT_HL)
+            {
+                oldRegVal = bus.read(readRegister(operand));
+                uint8_t res = oldRegVal << 1;
+                bus.write(readRegister(operand), res);
+                setFlags(res == 0, 0, 0, oldRegVal & 0x80);
+            }
+            else
+            {
+                oldRegVal = readRegister(operand);
+                uint8_t res = oldRegVal << 1;
+                bus.write(readRegister(operand), res);
+                setFlags(res == 0, 0, 0, oldRegVal & 0x80);
+            }
+            return;
+        case 1: // RRC
+            if (operand == RT_HL)
+            {
+                oldRegVal = bus.read(readRegister(operand));
+                uint8_t res = oldRegVal >> 1;
+                bus.write(readRegister(operand), res);
+                setFlags(res == 0, 0, 0, oldRegVal & 0x01);
+            }
+            else
+            {
+                oldRegVal = readRegister(operand);
+                uint8_t res = oldRegVal >> 1;
+                bus.write(readRegister(operand), res);
+                setFlags(res == 0, 0, 0, oldRegVal & 0x01);
+            }
+            return;
+        case 2: // RL
+            if (operand == RT_HL)
+            {
+                oldRegVal = bus.read(readRegister(operand));
+                uint8_t res = oldRegVal << 1;
+                bus.write(readRegister(operand), res);
+                setFlags(res == 0, 0, 0, oldRegVal & 0x80);
+            }
+            else
+            {
+                oldRegVal = readRegister(operand);
+                uint8_t res = oldRegVal << 1;
+                bus.write(readRegister(operand), res);
+                setFlags(res == 0, 0, 0, oldRegVal & 0x80);
+            }
+            return;
+        case 3: // RR
+            if (operand == RT_HL)
+            {
+                oldRegVal = bus.read(readRegister(operand));
+                uint8_t res = oldRegVal >> 1;
+                bus.write(readRegister(operand), res);
+                setFlags(res == 0, 0, 0, oldRegVal & 0x01);
+            }
+            else
+            {
+                oldRegVal = readRegister(operand);
+                uint8_t res = oldRegVal >> 1;
+                bus.write(readRegister(operand), res);
+                setFlags(res == 0, 0, 0, oldRegVal & 0x01);
+            }
+            return;
+    }
+
 }
