@@ -3,8 +3,9 @@
 
 /*
 Status development:
-    01 - special -> Test (13 2BC9)
-    06 - ld r,r  -> OK
+    01 - special  -> OK
+    03 - op sp,hl -> Test
+    06 - ld r,r   -> OK
 */
 
 CPU::CPU() : stack()
@@ -1067,7 +1068,11 @@ void CPU::procSBC(Bus& bus)
 void CPU::procPOP(Bus& bus)
 {
     if (currentInstruction.RT1 == RT_AF) {
-        writeRegister(currentInstruction.RT1, stack->pop16(reg, bus) & 0xFFF0);
+		uint16_t lo = stack->pop(reg, bus);
+		uint16_t hi = stack->pop(reg, bus);
+        uint16_t res = (hi << 8) | lo;
+        writeRegister(currentInstruction.RT1, res & 0xFFF0);
+        return;
     }
 
 	writeRegister(currentInstruction.RT1 ,stack->pop16(reg, bus));
