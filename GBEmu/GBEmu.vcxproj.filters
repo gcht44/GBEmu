@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Fichiers sources\test_rom">
+      <UniqueIdentifier>{006e754d-21c2-412b-a9cd-b39196cdd9be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CPU.cpp">
@@ -62,7 +65,10 @@
       <Filter>Fichiers sources</Filter>
     </None>
     <None Include="06.gb">
-      <Filter>Fichiers sources</Filter>
+      <Filter>Fichiers sources\test_rom</Filter>
+    </None>
+    <None Include="01.gb">
+      <Filter>Fichiers sources\test_rom</Filter>
     </None>
   </ItemGroup>
 </Project>
