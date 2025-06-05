@@ -1143,7 +1143,7 @@ void CPU::procRRA()
     uint8_t newC = reg.A & 1;
 
     reg.A = reg.A >> 1;
-    reg.A |= (c << 7);
+    reg.A |= (c << 3);
 
     setFlags(0, 0, 0, newC);
 }
@@ -1356,7 +1356,7 @@ void CPU::procCB(Bus& bus)
             {
                 oldRegVal = readRegister(operand);
                 uint8_t res = oldRegVal >> 1;
-                bus.write(readRegister(operand), res);
+                writeRegister(operand, res);
                 setFlags(res == 0, 0, 0, oldRegVal & 0x01);
             }
             return;
