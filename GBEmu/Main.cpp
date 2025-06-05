@@ -18,7 +18,7 @@ int main() {
     GBRomReader reader;
 
     try {
-        reader.load("06.gb");
+        reader.load("test_rom/1.gb");
         const auto& header = reader.getHeader();
         auto opcodes = reader.getOpcodes();
 

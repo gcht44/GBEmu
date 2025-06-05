@@ -3,14 +3,7 @@
 
 /*
 Status development:
-    - LD -> OK (No blaarg test yet)
-    - JP -> OK (No blaarg test yet)
-    - INC -> Test
-    - DEC -> Test
-    - ADD -> Test
-    - JR -> Test
-    - OR -> Test
-    - AND -> Test
+    06 - ld r,r -> OK
 */
 
 CPU::CPU() : stack()
@@ -297,7 +290,7 @@ CPU::CPU() : stack()
         {0xE6, {IN_AND, AM_D8, RT_NONE, RT_NONE, CT_NONE}},
         {0xE7, {IN_RST, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
         {0xE8, {IN_ADD, AM_HL_SPR, RT_SP, RT_NONE, CT_NONE}},
-        {0xE9, {IN_JP, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
+        {0xE9, {IN_JP, AM_R, RT_HL, RT_NONE, CT_NONE}},
         {0xEA, {IN_LD, AM_A16_R, RT_NONE, RT_A, CT_NONE}},
         {0xEB, {IN_ERR, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
         {0xEC, {IN_ERR, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
