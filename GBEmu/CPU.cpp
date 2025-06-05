@@ -923,13 +923,7 @@ void CPU::procINC(Bus& bus)
 
 void CPU::procDEC(Bus& bus)
 {
-    if (currentInstruction.RT1 >= RT_AF)
-    {
-        uint16_t value = readRegister(currentInstruction.RT1) - 1;
-        writeRegister(currentInstruction.RT1, value);
-        return;
-    }
-    else if (destIsMem)
+    if (destIsMem)
     {
         uint8_t value = bus.read(destMem) - 1;
         bus.write(destMem, value & 0xFF);
@@ -938,6 +932,12 @@ void CPU::procDEC(Bus& bus)
         bool hFlag = (value & 0x0F) == 0x0F;
 
         setFlags(zFlag, 1, hFlag, -1);
+        return;
+    }
+    else if (currentInstruction.RT1 >= RT_AF)
+    {
+        uint16_t value = readRegister(currentInstruction.RT1) - 1;
+        writeRegister(currentInstruction.RT1, value);
         return;
     }
     else
