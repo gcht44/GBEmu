@@ -1033,16 +1033,16 @@ void CPU::procCP(Bus& bus)
 
 void CPU::procADC(Bus& bus)
 {
-    if (currentInstruction.AM == AM_MR)
+    if (currentInstruction.AM == AM_R_MR)
     {
         fetchDataVal = bus.read(destMem);
     }
 
     uint16_t res = reg.A + fetchDataVal + ((reg.F & 0x10) >> 4); // Add A, fetchDataVal and carry if set
+    bool zFlag = (res & 0xFF) == 0;
+    bool hFlag = (reg.A & 0xF) + (fetchDataVal & 0xF) + ((reg.F & 0x10) >> 4) > 0xF;
+    bool cFlag = res > 0xFF;
 	reg.A = res & 0xFF; // Store result in A
-    bool zFlag = (res == 0);
-    bool hFlag = (res & 0xFF) > 0xF;
-    bool cFlag = (reg.A < fetchDataVal);
     setFlags(zFlag, 0, hFlag, cFlag);
 }
 
@@ -1376,7 +1376,7 @@ void CPU::procCB(Bus& bus)
             {
                 oldRegVal = readRegister(operand);
                 uint8_t res = oldRegVal << 1;
-                bus.write(readRegister(operand), res);
+                writeRegister(operand, res);
                 setFlags(res == 0, 0, 0, oldRegVal & 0x80);
             }
             return;
@@ -1392,7 +1392,7 @@ void CPU::procCB(Bus& bus)
             {
                 oldRegVal = readRegister(operand);
                 uint8_t res = oldRegVal >> 1;
-                bus.write(readRegister(operand), res);
+                writeRegister(operand, res);
                 setFlags(res == 0, 0, 0, oldRegVal & 0x01);
             }
             return;
@@ -1408,7 +1408,7 @@ void CPU::procCB(Bus& bus)
             {
                 oldRegVal = readRegister(operand);
                 uint8_t res = oldRegVal << 1;
-                bus.write(readRegister(operand), res);
+                writeRegister(operand, res);
                 setFlags(res == 0, 0, 0, oldRegVal & 0x80);
             }
             return;
@@ -1423,8 +1423,8 @@ void CPU::procCB(Bus& bus)
             else
             {
                 oldRegVal = readRegister(operand);
-                uint8_t res = oldRegVal >> 1;
-                bus.write(readRegister(operand), res);
+                uint8_t res = (oldRegVal >> 1) | ((reg.F & 0x10) << 3);
+                writeRegister(operand, res);
                 setFlags(res == 0, 0, 0, oldRegVal & 0x01);
             }
             return;
