@@ -957,13 +957,13 @@ void CPU::procADD(Bus& bus)
     if (currentInstruction.RT1 >= RT_AF)
     {
 	    uint32_t value = readRegister(currentInstruction.RT1) + fetchDataVal;
-	    writeRegister(currentInstruction.RT1, value & 0xFFFF);
-	    bool hFlag = ((readRegister(currentInstruction.RT1) & 0xFF) + (fetchDataVal & 0xFF)) > 0x0F;
+	    bool hFlag = ((readRegister(currentInstruction.RT1) & 0xFFF) + (fetchDataVal & 0xFFF)) > 0x1000;
 	    bool cFlag = value > 0xFFFF;
 	    setFlags(-1, 0, hFlag, cFlag);
+	    writeRegister(currentInstruction.RT1, value & 0xFFFF);
         return;
     }
-    uint32_t value = readRegister(currentInstruction.RT1) + fetchDataVal;
+    uint16_t value = readRegister(currentInstruction.RT1) + fetchDataVal;
     bool hFlag = ((readRegister(currentInstruction.RT1) & 0xF) + (fetchDataVal & 0xF)) > 0x0F;
     bool cFlag = value > 0xFF;
 	bool zFlag = (value & 0xFF) == 0;
