@@ -846,12 +846,12 @@ void CPU::procLD(Bus& bus)
     }
     else if (currentInstruction.AM == AM_HL_SPR)
     {
-        bool cFlag = (((readRegister(currentInstruction.RT2) & 0xFF) + fetchDataVal) > 0xFF);
-        bool hFlag = (((readRegister(currentInstruction.RT2) & 0xFF) + fetchDataVal) > 0xF);
+        int cFlag = (((readRegister(currentInstruction.RT2) & 0xFF) + fetchDataVal) > 0xFF);
+        int hFlag = ((readRegister(currentInstruction.RT1) & 0xF) + (fetchDataVal & 0xF)) > 0xF;
 
 		setFlags(0, 0, hFlag, cFlag);
 
-        writeRegister(currentInstruction.RT1, readRegister(currentInstruction.RT2) + fetchDataVal);
+        writeRegister(currentInstruction.RT1, readRegister(currentInstruction.RT2) + (char)fetchDataVal);
     }
     else
     {
