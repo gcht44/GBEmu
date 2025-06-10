@@ -4,7 +4,7 @@
 /*
 Status development:
     01 - special  -> OK
-    03 - op sp,hl -> Test
+    03 - op sp,hl -> Test Unsupported addressing mode: 13
     06 - ld r,r   -> OK
 */
 
@@ -291,7 +291,7 @@ CPU::CPU() : stack()
         {0xE5, {IN_PUSH, AM_R, RT_HL, RT_NONE, CT_NONE}},
         {0xE6, {IN_AND, AM_D8, RT_NONE, RT_NONE, CT_NONE}},
         {0xE7, {IN_RST, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
-        {0xE8, {IN_ADD, AM_HL_SPR, RT_SP, RT_NONE, CT_NONE}},
+        {0xE8, {IN_ADD, AM_R_D8, RT_SP, RT_NONE, CT_NONE}},
         {0xE9, {IN_JP, AM_R, RT_HL, RT_NONE, CT_NONE}},
         {0xEA, {IN_LD, AM_A16_R, RT_NONE, RT_A, CT_NONE}},
         {0xEB, {IN_ERR, AM_IMP, RT_NONE, RT_NONE, CT_NONE}},
@@ -397,7 +397,7 @@ void CPU::writeRegister(RegType RT, uint16_t val)
 }
 
 
-void CPU::setFlags(char z, char n, char h, char c)
+void CPU::setFlags(int z, int n, int h, int c)
 {
     if (z != -1)
     {
@@ -669,6 +669,9 @@ void CPU::fetchData(Bus& bus)
 		fetchDataVal = bus.read16(reg.PC);
 		fetchDataVal = bus.read(fetchDataVal);
 		reg.PC += 2;
+        break;
+    case AM_HL_SPR:
+		fetchDataVal = bus.read(reg.PC++); 
         break;
 	default:
 		std::cerr << "Unsupported addressing mode: " << static_cast<int>(currentInstruction.AM) << "\n";
@@ -949,22 +952,34 @@ void CPU::procDEC(Bus& bus)
 
 void CPU::procADD(Bus& bus)
 {
-    if (currentInstruction.RT1 >= RT_AF)
-    {
-	    uint32_t value = readRegister(currentInstruction.RT1) + fetchDataVal;
-	    bool hFlag = ((readRegister(currentInstruction.RT1) & 0xFFF) + (fetchDataVal & 0xFFF)) > 0x1000;
-	    bool cFlag = value > 0xFFFF;
-	    setFlags(-1, 0, hFlag, cFlag);
-	    writeRegister(currentInstruction.RT1, value & 0xFFFF);
-        return;
-    }
-    uint16_t value = readRegister(currentInstruction.RT1) + fetchDataVal;
-    bool hFlag = ((readRegister(currentInstruction.RT1) & 0xF) + (fetchDataVal & 0xF)) > 0x0F;
-    bool cFlag = value > 0xFF;
-	bool zFlag = (value & 0xFF) == 0;
 
-    setFlags(zFlag, 0, hFlag, cFlag);
-    writeRegister(currentInstruction.RT1, value & 0xFFFF);
+    uint32_t val = readRegister(currentInstruction.RT1) + fetchDataVal;
+
+    bool is_16bit = currentInstruction.RT1 >= RT_AF;
+
+    if (currentInstruction.RT1 == RT_SP) {
+        val = readRegister(currentInstruction.RT1) + (char)fetchDataVal;
+    }
+
+    int z = (val & 0xFF) == 0;
+    int h = (readRegister(currentInstruction.RT1) & 0xF) + (fetchDataVal & 0xF) >= 0x10;
+    int c = (int)(readRegister(currentInstruction.RT1) & 0xFF) + (int)(fetchDataVal & 0xFF) >= 0x100;
+
+    if (is_16bit) {
+        z = -1;
+        h = (readRegister(currentInstruction.RT1) & 0xFFF) + (fetchDataVal & 0xFFF) >= 0x1000;
+        uint32_t n = ((uint32_t)readRegister(currentInstruction.RT1)) + ((uint32_t)fetchDataVal);
+        c = n >= 0x10000;
+    }
+
+    if (currentInstruction.RT1 == RT_SP) {
+        z = 0;
+        h = (readRegister(currentInstruction.RT1) & 0xF) + (fetchDataVal & 0xF) >= 0x10;
+        c = (int)(readRegister(currentInstruction.RT1) & 0xFF) + (int)(fetchDataVal & 0xFF) >= 0x100;
+    }
+
+    writeRegister(currentInstruction.RT1, val & 0xFFFF);
+    setFlags(z, 0, h, c);
 }
 
 void CPU::procJR()

@@ -70,5 +70,8 @@
     <None Include="01.gb">
       <Filter>Fichiers sources\test_rom</Filter>
     </None>
+    <None Include="03.gb">
+      <Filter>Fichiers sources\test_rom</Filter>
+    </None>
   </ItemGroup>
 </Project>

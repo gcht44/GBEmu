@@ -152,7 +152,7 @@ public:
 	uint16_t readRegister(RegType RT);
 	void writeRegister(RegType RT, uint16_t val);
 
-	void setFlags(char z, char n, char h, char c);
+	void setFlags(int z, int n, int h, int c);
 	void executeOpcode(uint8_t opcode, Bus& bus);
 private:
 	Stack* stack;
