@@ -38,6 +38,7 @@
   <ItemGroup>
     <None Include="01.gb" />
     <None Include="03.gb" />
+    <None Include="04.gb" />
     <None Include="06.gb" />
     <None Include="Pokemon_Rouge.gb" />
   </ItemGroup>
